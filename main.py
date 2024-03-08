@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Form, Request, HTTPException
 from fastapi.templating import Jinja2Templates
+from fastapi.responses import FileResponse
 from database import engineconn
 from model import User
 
@@ -9,8 +10,8 @@ engine = engineconn()
 session = engine.sessionmaker()
 
 @app.get("/")
-def main(request: Request):
-    return templates.TemplateResponse('index.html', context={'request': request})
+def main():
+    return templates.FileResponse('index.html')
 
 @app.get("/register")
 def register(request: Request):
