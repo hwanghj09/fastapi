@@ -26,11 +26,9 @@ def check_grade(request: Request):
 def login(request: Request):
     return templates.TemplateResponse('login.html', context={'request': request})
 
-@app.post("/community")
+@app.get("/community")
 def community(request: Request):
     return templates.TemplateResponse('community.html', context={'request':request})
-
-    
 
 @app.post("/post_register")
 def process_register(username: str = Form(...), password: str = Form(...)):
@@ -40,9 +38,8 @@ def process_register(username: str = Form(...), password: str = Form(...)):
     new_user = User(name=username, password=password)
     session.add(new_user)
     session.commit()
-    all_users = session.query(User).all()
-
-    return f"User {username} registered successfully"
+    response = RedirectResponse(url="/login")
+    return response
 
 @app.post("/post_login")
 def process_login(request: Request, username: str = Form(...), password: str = Form(...)):

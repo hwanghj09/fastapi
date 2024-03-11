@@ -12,54 +12,69 @@
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
-            /* Set a background color */
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            /* Set minimum height to cover the entire viewport */
         }
         
         h1 {
             color: #333;
-            font-size: 60px;
+            font-size: 40px;
+            /* Adjust font size for smaller screens */
             text-align: center;
-            margin-bottom: 600px;
+            margin-bottom: 20px;
+            /* Reduce margin for smaller screens */
         }
         
         form {
             text-align: center;
             background-color: #f9f9f9;
-            padding: 40px;
+            padding: 20px;
+            /* Adjust padding for smaller screens */
             border-radius: 20px;
-            margin-right: 280px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            /* Set a percentage width for responsiveness */
+            max-width: 400px;
+            /* Set a maximum width for larger screens */
+            margin: auto;
+            /* Center the form horizontally */
         }
         
         label {
             display: block;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            /* Reduce margin for smaller screens */
             color: #333;
-            font-size: 24px;
+            font-size: 18px;
+            /* Adjust font size for smaller screens */
         }
         
         input {
-            width: 100%;
-            padding: 20px;
-            margin-bottom: 30px;
+            width: calc(100% - 40px);
+            /* Adjust input width for smaller screens */
+            padding: 10px;
+            margin-bottom: 20px;
+            /* Adjust margin for smaller screens */
             box-sizing: border-box;
             border: 3px solid #ccc;
             border-radius: 12px;
-            font-size: 22px;
+            font-size: 16px;
+            /* Adjust font size for smaller screens */
         }
         
         button {
             background-color: #4caf50;
             color: #fff;
-            padding: 30px 60px;
+            padding: 20px 40px;
+            /* Adjust padding for smaller screens */
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            font-size: 28px;
+            font-size: 18px;
+            /* Adjust font size for smaller screens */
         }
         
         button:hover {

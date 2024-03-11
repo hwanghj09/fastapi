@@ -5,18 +5,117 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Set minimum height to cover the entire viewport */
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 40px;
+            /* Adjust font size for smaller screens */
+            text-align: center;
+            margin-bottom: 20px;
+            /* Reduce margin for smaller screens */
+        }
+        
+        form {
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 20px;
+            /* Adjust padding for smaller screens */
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            /* Set a percentage width for responsiveness */
+            max-width: 400px;
+            /* Set a maximum width for larger screens */
+            margin: auto;
+            /* Center the form horizontally */
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            /* Reduce margin for smaller screens */
+            color: #333;
+            font-size: 18px;
+            /* Adjust font size for smaller screens */
+        }
+        
+        input {
+            width: calc(100% - 40px);
+            /* Adjust input width for smaller screens */
+            padding: 10px;
+            margin-bottom: 20px;
+            /* Adjust margin for smaller screens */
+            box-sizing: border-box;
+            border: 3px solid #ccc;
+            border-radius: 12px;
+            font-size: 16px;
+            /* Adjust font size for smaller screens */
+        }
+        
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 20px 40px;
+            /* Adjust padding for smaller screens */
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            /* Adjust font size for smaller screens */
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .error-message {
+            color: #ff0000;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Register</h1>
-    <form method="post" action="/post_register">
+    <h1 style="margin: 200px;">회원가입</h1>
+    <form method="post" action="/post_register" onsubmit="return validateForm()">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>
-        <button type="submit">Register</button>
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+        <div class="error-message" id="password-error"></div><br>
+        <button type="submit">회원가입</button>
     </form>
+
+    <script>
+        function validateForm() {
+            var password = document.getElementById("password").value;
+            var confirm_password = document.getElementById("confirm_password").value;
+
+            if (password !== confirm_password) {
+                document.getElementById("password-error").innerText = "비밀번호가 일치하지 않습니다.";
+                return false;
+            } else {
+                document.getElementById("password-error").innerText = "";
+                return true;
+            }
+        }
+    </script>
 </body>
 
 </html>
