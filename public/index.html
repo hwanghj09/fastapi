@@ -6,13 +6,137 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>index</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            /* Hide horizontal scrollbar */
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        button {
+            background-color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        
+        button a {
+            text-decoration: none;
+            color: black;
+        }
+        
+        nav.로그인회원가입문의 {
+            font-size: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            gap: 20px;
+        }
+        
+        nav.로그인회원가입문의 a {
+            text-decoration: none;
+            color: gray;
+            position: relative;
+            transition: border-bottom 0s ease-in-out;
+            margin-right: 30px;
+        }
+        
+        nav.로그인회원가입문의 a:hover {
+            border-bottom: 2px solid #000000;
+            color: black;
+        }
+        
+        .나타나는메인재오 {
+            font-size: 50px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            margin-top: 0px;
+            margin-left: 250px;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                margin-top: 180px;
+            }
+            to {
+                opacity: 1;
+                margin-top: 190px;
+            }
+        }
+        
+        .sider {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #333;
+            transition: left 0.3s ease-in-out;
+            overflow-y: auto;
+            padding-top: 50px;
+        }
+        
+        .sider a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            font-size: 18px;
+            border-bottom: 1px solid #555;
+            transition: background-color 0.3s;
+        }
+        
+        .sider a:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>index</h1>
-    <h3><a href='/register'>register</a></h3>
-    <h3><a href="/login">login</a></h3>
-    <h3><a href="/check_grade">check_grade</a></h3>
+    <header>
+        <button id="toggleSidebar"><a style="font-size: 40px;">≡</a></button>
+        <nav class="로그인회원가입문의">
+            <a href="/login">로그인</a>
+            <a href="/register">회원가입</a>
+            <a href="#">문의</a>
+        </nav>
+    </header>
+    <div class="나타나는메인재오">
+        재오 화이팅
+        <p style="font-size: 20px; color: gray; margin-top: 30px;">경기도 수원시 장안구 율전동 신일아파트 103동 x층 x호에 거주하며 09년생 소띠 양자리이다.</p>
+        <p style="font-size: 20px; color: gray; margin-top: -15px;">이재오는 현재 3명의 전여친이 있으며 현재 활발하게 연애 중이다</p>
+        <p style="font-size: 20px; color: gray; margin-top: -15px;">2020년 초반에 첫 여친이 생겼다</p>
+    </div>
+    <div class="sider" id="sider">
+        <a href="#">메뉴 1</a>
+        <a href="#">메뉴 2</a>
+        <a href="#">메뉴 3</a>
+    </div>
+
+    <script>
+        const toggleButton = document.getElementById('toggleSidebar');
+        const sider = document.getElementById('sider');
+
+        toggleButton.addEventListener('click', () => {
+            sider.style.left = sider.style.left === '0px' ? '-300px' : '0px';
+        });
+
+        sider.addEventListener('mouseleave', () => {
+            sider.style.left = '-300px';
+        });
+    </script>
 </body>
 
 </html>

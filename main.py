@@ -1,5 +1,7 @@
-from fastapi import FastAPI, Form, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Form, Request
+from fastapi.responses import RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 from database import engineconn
 from model import User
 
@@ -9,8 +11,8 @@ engine = engineconn()
 session = engine.sessionmaker()
 
 @app.get("/")
-def main(request: Request):
-    return templates.TemplateResponse('index.html', context={'request': request})
+def main():
+    return FileResponse('public/index.html')
 
 @app.get("/register")
 def register(request: Request):
@@ -24,6 +26,12 @@ def check_grade(request: Request):
 def login(request: Request):
     return templates.TemplateResponse('login.html', context={'request': request})
 
+@app.post("/community")
+def community(request: Request):
+    return templates.TemplateResponse('community.html', context={'request':request})
+
+    
+
 @app.post("/post_register")
 def process_register(username: str = Form(...), password: str = Form(...)):
     existing_user = session.query(User).filter_by(name=username).first()
@@ -34,12 +42,13 @@ def process_register(username: str = Form(...), password: str = Form(...)):
     session.commit()
     all_users = session.query(User).all()
 
-    return {"message": f"User {username} registered successfully", "all_users": all_users}
+    return f"User {username} registered successfully"
 
 @app.post("/post_login")
-def process_login(username: str = Form(...), password: str = Form(...)):
+def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
     user = session.query(User).filter_by(name=username, password=password).first()
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
+    response = RedirectResponse(url="/")
+    return response
 
-    return {"message": f"User {username} logged in successfully"}
