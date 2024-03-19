@@ -61,7 +61,7 @@ def process_register(username: str = Form(...), password: str = Form(...)):
     new_user = User(name=username, password=password)
     session.add(new_user)
     session.commit()
-    response = RedirectResponse(url="public/index")  # 회원가입 성공 시 /index로 이동
+    response = FileResponse("public/index.html")  # 회원가입 성공 시 /index로 이동
     return store_user_cookie(response, username)  # 쿠키에 유저 이름 저장
 
 @app.post("/post_login")
