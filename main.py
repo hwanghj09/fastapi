@@ -15,7 +15,7 @@ session = engine.sessionmaker()
 def store_user_cookie(response: RedirectResponse, username: str):
     cookie = http.cookies.SimpleCookie()
     cookie["username"] = username.encode("ascii", "ignore").decode()  # 비 ASCII 문자 무시
-    cookie["username"]["max-age"] = 360000  # 쿠키 유효 시간: 3600초
+    cookie["username"]["max-age"] = 36000  # 쿠키 유효 시간: 3600초
     response.headers["set-cookie"] = cookie.output(header="")
     return response
 
