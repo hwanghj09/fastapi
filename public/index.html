@@ -7,23 +7,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>index</title>
     <style>
+        /* 기존 스타일 코드 */
+        
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            /* Hide horizontal scrollbar */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px;
+            z-index: 10000;
         }
         
         button {
-            background-color: #ffffff;
             border: none;
             padding: 10px 20px;
             font-size: 16px;
@@ -57,23 +66,14 @@
             color: black;
         }
         
-        .나타나는메인재오 {
+        .나타나는메인 {
             font-size: 80px;
-            opacity: 0;
-            animation: fadeIn 1s forwards;
-            margin-left: 250px;
-            text-align: left;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                margin-top: 180px;
-            }
-            to {
-                opacity: 1;
-                margin-top: 190px;
-            }
+            margin: 0 auto;
+            /* 수평 가운데 정렬 */
+            text-align: center;
+            /* 텍스트를 가운데 정렬 */
+            opacity: 1;
+            margin-top: 250px;
         }
         
         .sider {
@@ -82,10 +82,11 @@
             left: -300px;
             width: 300px;
             height: 100%;
-            background-color: #333;
+            text-align: center;
+            background-color: rgb(36, 36, 36);
             transition: left 0.3s ease-in-out;
             overflow-y: auto;
-            padding-top: 50px;
+            padding-top: 70px;
         }
         
         .sider a {
@@ -101,48 +102,130 @@
         .sider a:hover {
             background-color: #555;
         }
-        /* Media Query for Mobile */
         
-        @media screen and (max-width: 768px) {
-            .나타나는메인재오 {
-                font-size: 40px;
-                margin-left: 50px;
+        #toggleSidebar:hover {
+            color: black;
+        }
+        /* 추가된 애니메이션 스타일 */
+        
+        @keyframes moveUp {
+            0% {
+                transform: translateY(0);
             }
+            100% {
+                transform: translateY(-50px);
+            }
+        }
+        
+        .간단설명 {
+            background-color: rgb(30, 30, 30);
+            width: 100%;
+            height: 200px;
+            position: absolute;
+            bottom: -200px;
+            left: 0;
+            color: white;
+        }
+        
+        .시작버튼 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            /* 애니메이션 설정 */
+        }
+        
+        .시작버튼.fadeIn {
+            opacity: 1;
+            /* fadeIn 클래스가 추가되면 투명도를 1로 설정하여 나타나게 함 */
         }
     </style>
 </head>
 
 <body>
     <header>
-        <button id="toggleSidebar"><a style="font-size: 40px;">≡</a></button>
+        <a id="toggleSidebar" style="padding: 5px; font-size: 50px; color: gray;">≡</a>
         <nav class="로그인회원가입문의">
             <a href="/login">로그인</a>
             <a href="/register">회원가입</a>
             <a href="#">문의</a>
         </nav>
     </header>
-    <div class="나타나는메인재오">
-        재오 화이팅
-        <p style="font-size: 16px; color: gray; margin-top: 15px;">경기도 수원시 장안구 율전동 신일아파트 103동 x층 x호에 거주하며 09년생 소띠 양자리이다.</p>
-        <p style="font-size: 16px; color: gray; margin-top: -5px;">이재오는 현재 3명의 전여친이 있으며 현재 활발하게 연애 중이다.</p>
-        <p style="font-size: 16px; color: gray; margin-top: -5px;">2020년 초반에 첫 여친이 생겼다. 전화번호는 010으로 시작한다</p>
+    <div class="나타나는메인">
+        <p class="typing-text"></p>
     </div>
     <div class="sider" id="sider">
-        <a href="#">메뉴 1</a>
+        <a href="/community">게시판</a>
         <a href="#">메뉴 2</a>
         <a href="#">메뉴 3</a>
     </div>
-
+    <div class="시작버튼"><button onclick="scrollToDescription()">시작하기</button></div>
+    <div class="간단설명" style="bottom: -300px;">대충 엄청나고 놀라운 설명들</div>
+    <div class="간단설명" style="bottom: -500px;">대충 엄청나고 놀라운 설명들</div>
+    <div class="간단설명" style="bottom: -700px;">대충 엄청나고 놀라운 설명들</div>
     <script>
         const toggleButton = document.getElementById('toggleSidebar');
         const sider = document.getElementById('sider');
 
+        let isSidebarOpen = false;
+
         toggleButton.addEventListener('click', () => {
-            sider.style.left = sider.style.left === '0px' ? '-300px' : '0px';
+            if (isSidebarOpen) {
+                sider.style.left = '-300px';
+            } else {
+                sider.style.left = '0px';
+            }
+            isSidebarOpen = !isSidebarOpen;
         });
 
-        sider.addEventListener('mouseleave', () => {
-            sider.style.left = '-300px';
+        const typingText = document.querySelector('.typing-text');
+        const text1 = "I'm Student";
+        const text2 = " Programmer";
+        let index = 0;
+
+        function type() {
+            if (index < text1.length) {
+                typingText.textContent += text1.charAt(index);
+                index++;
+                setTimeout(type, 50);
+            } else {
+                setTimeout(deleteText, 1000); // "I'm Student"가 모두 타이핑된 후 1초 후에 삭제
+            }
+        }
+
+        function deleteText() {
+            if (index > 3) {
+                typingText.textContent = text1.substring(0, index - 1); // 한 글자씩 삭제
+                index--;
+                setTimeout(deleteText, 50);
+            } else {
+                setTimeout(type2, 500);
+                index = 0
+            }
+        }
+
+        function type2() {
+            if (index < text2.length) {
+                typingText.textContent += text2.charAt(index);
+                index++;
+                setTimeout(type2, 50);
+            } else {
+                const startButton = document.querySelector('.시작버튼');
+                startButton.classList.add('fadeIn');
+            }
+        }
+
+        function scrollToDescription() {
+            const descriptionSection = document.querySelector('.간단설명');
+            descriptionSection.scrollIntoView({
+                behavior: 'smooth'
+            }); // 부드러운 스크롤 이동
+        }
+
+        // 페이지 로드 후 타이핑 시작
+        window.addEventListener('load', () => {
+            type();
         });
     </script>
 </body>
