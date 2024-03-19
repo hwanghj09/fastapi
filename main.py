@@ -11,23 +11,6 @@ templates = Jinja2Templates(directory='./public')
 engine = engineconn()
 session = engine.sessionmaker()
 
-# 로그인 또는 회원가입 시 유저 이름을 쿠키에 저장하는 함수
-def store_user_cookie(response: RedirectResponse, username: str):
-    cookie = http.cookies.SimpleCookie()
-    cookie["username"] = username.encode("ascii", "ignore").decode()  # 비 ASCII 문자 무시
-    cookie["username"]["max-age"] = 36000  # 쿠키 유효 시간: 3600초
-    response.headers["set-cookie"] = cookie.output(header="")
-    return response
-
-# 유저 이름을 쿠키에서 읽어오는 함수
-def get_user_cookie(request: Request):
-    cookie_str = request.headers.get("cookie", "")
-    cookies = http.cookies.SimpleCookie(cookie_str)
-    username_cookie = cookies.get("username")
-    if username_cookie:
-        return username_cookie.value
-    else:
-        return None
 
 @app.get("/")
 def main():
@@ -62,7 +45,7 @@ def process_register(username: str = Form(...), password: str = Form(...)):
     session.add(new_user)
     session.commit()
     response = FileResponse("public/index.html")  # 회원가입 성공 시 /index로 이동
-    return store_user_cookie(response, username)  # 쿠키에 유저 이름 저장
+    return response
 
 @app.post("/post_login")
 def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
@@ -70,4 +53,4 @@ def process_login(request: Request, username: str = Form(...), password: str = F
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     response = FileResponse('public/index.html')  # 로그인 성공 시 /index.html 파일을 반환
-    return store_user_cookie(response, username)  # 쿠키에 유저 이름 저장
+    return response
