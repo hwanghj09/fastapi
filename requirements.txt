@@ -10,3 +10,4 @@ keyboard==0.13.5
 PyMySQL==1.1.0
 python-multipart==0.0.9
 itsdangerous==2.1.2
+passlib==1.7.4
