@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -69,11 +69,11 @@
 <body>
     <center>
         <div class="register-wrapper">
-            <h2>register</h2>
+            <h2>회원가입</h2>
             <form method="post" action="/post_register" id="register-form" onsubmit="return validateForm()">
-                <input type="text" id="username" name="username" placeholder="Nickname" required>
-                <input type="password" id="password" name="password" placeholder="Password" required>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Check Password" required>
+                <input type="text" id="username" name="username" placeholder="아이디 (영어만 가능)" pattern="^[a-zA-Z0-9]*$" required>
+                <input type="password" id="password" name="password" placeholder="비밀번호" required>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="비밀번호 확인" required>
                 <button type="submit" style="font-size: 16px; font-weight: bold;">회원가입</button>
             </form>
             <button onclick="goToIndex()" style="margin-top: 5px; font-size: 16px; font-weight: bold;">돌아가기</button>
@@ -98,7 +98,5 @@
         }
     </script>
 </body>
-
-</html>
 
 </html>
