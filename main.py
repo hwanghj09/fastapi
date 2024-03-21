@@ -61,7 +61,10 @@ async def get_inquiries(request: Request, db: Session = Depends(engineconn().ses
     return templates.TemplateResponse("admin_users.html", {"request": request, "Users": Users})
 
 @app.get("/admin/users/reset_password/{user_id}")
-async def reset_password(user_id: int, db: Session = Depends(engineconn().sessionmaker)):
+async def reset_password(user_id: int, db: Session = Depends(engineconn().sessionmaker), username: str = Cookie(None)):
+    username = serializer.loads(username)
+    if username != "hwanghj09":
+        raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
