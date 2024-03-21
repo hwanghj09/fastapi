@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #333;
+        }
+        
+        a {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            text-align: center;
+            background-color: #ffffff;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin</h1>
+    <a href="/admin/inquiries">문의 관리</a>
+    <a href="/admin/users">유저 관리</a>
+    <center><button onclick="goToIndex()" style="margin-top: 10px; font-size: 16px; font-weight: bold;">돌아가기</button></center>
+    <script>
+        function goToIndex() {
+            window.location.href = "/index";
+        }
+    </script>
+</body>
+
+</html>

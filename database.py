@@ -7,6 +7,7 @@ class engineconn:
 
     def __init__(self):
         self.engine = create_engine(DB_URL, pool_recycle = 500)
+        self.SessionLocal = sessionmaker(bind=self.engine)
 
     def sessionmaker(self):
         Session = sessionmaker(bind=self.engine)
@@ -16,3 +17,4 @@ class engineconn:
     def connection(self):
         conn = self.engine.connect()
         return conn
+        

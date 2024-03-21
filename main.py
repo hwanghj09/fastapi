@@ -1,15 +1,17 @@
-from fastapi import FastAPI, HTTPException, Form, Request, Cookie,Response
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, HTTPException, Form, Request, Cookie,Response,Depends
+from fastapi.responses import FileResponse, JSONResponse,RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from database import engineconn
-from model import User
+from model import User, Inquiry
 from itsdangerous import URLSafeSerializer
+from pydantic import BaseModel
 
 app = FastAPI()
 templates = Jinja2Templates(directory='./public')
 engine = engineconn()
 session = engine.sessionmaker()
+SessionLocal = engine.sessionmaker()
 SECRET_KEY = "JEOFIGHTING"
 serializer = URLSafeSerializer(SECRET_KEY)
 
@@ -32,6 +34,44 @@ def login(request: Request):
 @app.get("/community")
 def community(request: Request):
     return templates.TemplateResponse('community.html', context={'request': request})
+@app.get("/inquiry")
+def inquiry(request: Request):
+    return templates.TemplateResponse('inquiry.html', context={'request': request})
+@app.get("/admin")
+def admin(request: Request, username: str = Cookie(None)):
+    username = serializer.loads(username)
+    if username != "hwanghj09":
+        raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
+    return templates.TemplateResponse('admin.html', context={'request': request})
+
+@app.get("/admin/inquiries")
+async def get_inquiries(request: Request, db: Session = Depends(engineconn().sessionmaker) , username: str = Cookie(None)):
+    username = serializer.loads(username)
+    if username != "hwanghj09":
+        raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
+    inquiries = db.query(Inquiry).all()  # 모든 문의 내역을 가져옵니다.
+    return templates.TemplateResponse("admin_inquiries.html", {"request": request, "inquiries": inquiries})
+
+@app.get("/admin/users")
+async def get_inquiries(request: Request, db: Session = Depends(engineconn().sessionmaker) , username: str = Cookie(None)):
+    username = serializer.loads(username)
+    if username != "hwanghj09":
+        raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
+    Users = db.query(User).all()  # 모든 문의 내역을 가져옵니다.
+    return templates.TemplateResponse("admin_users.html", {"request": request, "Users": Users})
+
+@app.get("/admin/users/reset_password/{user_id}")
+async def reset_password(user_id: int, db: Session = Depends(engineconn().sessionmaker)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # 비밀번호를 변경하여 저장
+    user.password = "1234"
+    db.commit()
+    
+    return RedirectResponse(url="/admin/users", status_code=303)
+
 
 @app.post("/post_register")
 def process_register(username: str = Form(...), password: str = Form(...)):
@@ -54,13 +94,43 @@ def process_register(username: str = Form(...), password: str = Form(...)):
 def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
     user = session.query(User).filter_by(name=username, password=password).first()
     if not user:
-        return FileResponse('public/index.html')  # 로그인 실패 시 로그인 페이지로 리다이렉트
+        return FileResponse('public/login.html')  # 로그인 실패 시 로그인 페이지로 리다이렉트
     
     response = FileResponse('public/index.html')  # 로그인 성공 시 /index.html 파일을 반환
     
     # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
     encrypted_username = serializer.dumps(username)
     response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
+
     
     return response
-        
+
+@app.get("/check_login")
+async def check_login(username: str = Cookie(None)):
+    if username:
+        return {"login" : True}, FileResponse('public/index.html')
+    else:
+        return {"login" : False}, FileResponse('public/index.html')
+    
+@app.get("/logout")
+async def logout(request: Request):
+    response = templates.TemplateResponse("index.html", {"request":request})
+    response.delete_cookie(key="username")
+    return response
+
+@app.post("/submit_contact_form")
+async def submit_contact_form(request: Request):
+    form_data = await request.form()
+    name = form_data.get("name")
+    title = form_data.get("title")
+    message = form_data.get("message")
+
+    # 데이터베이스에 저장
+    db = engineconn().sessionmaker()
+    new_inquiry = Inquiry(username=name, title=title, content=message)
+    db.add(new_inquiry)
+    db.commit()
+    db.close()
+
+    return templates.TemplateResponse('inquiry.html', context={"request":request})
+

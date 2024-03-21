@@ -66,6 +66,27 @@
             color: black;
         }
         
+        nav.로그아웃문의 {
+            font-size: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            gap: 20px;
+        }
+        
+        nav.로그아웃문의 a {
+            text-decoration: none;
+            color: gray;
+            position: relative;
+            transition: border-bottom 0s ease-in-out;
+            margin-right: 30px;
+        }
+        
+        nav.로그아웃문의 a:hover {
+            border-bottom: 2px solid #000000;
+            color: black;
+        }
+        
         .나타나는메인 {
             font-size: 80px;
             margin: 0 auto;
@@ -149,8 +170,13 @@
         <nav class="로그인회원가입문의">
             <a href="/login">로그인</a>
             <a href="/register">회원가입</a>
-            <a href="#">문의</a>
+            <a href="/inquiry">문의</a>
         </nav>
+        <nav class="로그아웃문의">
+            <a href="/logout">로그아웃</a>
+            <a href="/inquiry">문의</a>
+        </nav>
+
     </header>
     <div class="나타나는메인">
         <p class="typing-text"></p>
@@ -227,7 +253,27 @@
         window.addEventListener('load', () => {
             type();
         });
+        window.addEventListener('load', () => {
+            fetch('/check_login')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data[0]);
+                    const login = data[0].login; // 서버로부터 받은 데이터에서 login 값을 추출하여 변수에 할당
+                    if (login) {
+                        document.getElementsByClassName('로그인회원가입문의')[0].style.display = 'none';
+                        document.getElementsByClassName('로그아웃문의')[0].style.display = 'block';
+                    } else {
+                        document.getElementsByClassName('로그인회원가입문의')[0].style.display = 'block';
+                        document.getElementsByClassName('로그아웃문의')[0].style.display = 'none';
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Error checking cookie:', error);
+                });
+        });
     </script>
+
 </body>
 
 </html>

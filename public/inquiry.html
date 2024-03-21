@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            margin-top: 150px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        form {
+            margin-top: 20px;
+            margin-left: 100px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Contact Us</h1>
+        <form action="/submit_contact_form" method="post">
+            <label for="name">닉네임</label>
+            <input type="text" id="name" name="name" required>
+            <label for="title">제목</label>
+            <input type="text" id="title" name="title" required>
+            <label for="message">문의내용</label>
+            <textarea id="message" name="message" required></textarea>
+            <br>
+            <button type="submit" style="font-size: 17px; font-weight: bold; background-color: white; border: none;">문의하기</button>
+            <button onclick="goToIndex()" style="margin-top: 12px; margin-bottom: 20px;font-size: 17px; font-weight: bold; background-color: white; border: none;">돌아가기</button>
+        </form>
+    </div>
+    <script>
+        function goToIndex() {
+            window.location.href = "/index";
+        }
+    </script>
+</body>
+
+</html>
