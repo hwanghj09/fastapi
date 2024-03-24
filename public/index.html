@@ -138,14 +138,19 @@
             }
         }
         
-        .간단설명 {
-            background-color: rgb(30, 30, 30);
+        .내소개 {
+            background-color: rgb(255, 255, 255);
             width: 100%;
             height: 200px;
             position: absolute;
-            bottom: -200px;
             left: 0;
-            color: white;
+            color: rgb(0, 0, 0);
+        }
+        
+        .내소개 p {
+            padding-left: 50px;
+            font-weight: bold;
+            font-size: 20px;
         }
         
         .시작버튼 {
@@ -187,9 +192,22 @@
         <a href="#">메뉴 3</a>
     </div>
     <div class="시작버튼"><button onclick="scrollToDescription()">시작하기</button></div>
-    <div class="간단설명" style="bottom: -300px;">대충 엄청나고 놀라운 설명들</div>
-    <div class="간단설명" style="bottom: -500px;">대충 엄청나고 놀라운 설명들</div>
-    <div class="간단설명" style="bottom: -700px;">대충 엄청나고 놀라운 설명들</div>
+    <div class="내소개" style="bottom: -300px;">
+        <hr width="80%">
+        <div style="display: flex; align-items: center; justify-content: center; padding-top: 20px; padding-bottom: 20px;">
+            <img src="https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg" style="width: 250px; height: 250px;">
+            <div style="padding-left: 20px;">
+                <p>안녕하세요, 황현준입니다.</p>
+                <p>저는 개발에 열정을 가지고 있으며, 문제 해결능력과 협업 능력을 갖추고 있습니다.</p>
+                <p>새로운 기술에 끊임없이 도전하며 사용자 중심의 솔루션을 제공하기 위해 노력하고 있습니다.</p>
+            </div>
+        </div>
+        <hr width="80%">
+    </div>
+
+    <footer style="bottom: -600px; position: absolute;">
+        <a>hi</a>
+    </footer>
     <script>
         const toggleButton = document.getElementById('toggleSidebar');
         const sider = document.getElementById('sider');
@@ -243,7 +261,7 @@
         }
 
         function scrollToDescription() {
-            const descriptionSection = document.querySelector('.간단설명');
+            const descriptionSection = document.querySelector('.내소개');
             descriptionSection.scrollIntoView({
                 behavior: 'smooth'
             }); // 부드러운 스크롤 이동
