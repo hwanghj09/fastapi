@@ -107,7 +107,7 @@
             background-color: rgb(36, 36, 36);
             transition: left 0.3s ease-in-out;
             overflow-y: auto;
-            padding-top: 70px;
+            padding-top: 100px;
             z-index: 1;
         }
         
@@ -205,7 +205,8 @@
     <div class="sider" id="sider">
         <a href="/community">게시판</a>
         <a href="#">메뉴 2</a>
-        <a href="#">메뉴 3</a>
+        <a href="#">메뉴 3</a> {% if manager == True %}
+        <a href="/admin">관리자</a> {% endif %}
     </div>
     <div class="시작버튼"><button onclick="scrollToDescription()">시작하기</button></div>
     <div class="내소개" style="bottom: -300px;">

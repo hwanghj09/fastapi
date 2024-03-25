@@ -18,13 +18,18 @@ manager = ["hwanghj09"]
 
 def is_manager(username: str, managers: List[str]) -> bool:
     return username in managers
+
 @app.get("/")
-def main():
-    return FileResponse('public/index.html')
+def main(request: Request, username: str = Cookie(None)):
+    username = serializer.loads(username)
+    manager_check = is_manager(username, manager)  # 여기서 전역 변수 manager를 전달해야 합니다.
+    return templates.TemplateResponse('index.html', context={'request': request, "username":username, "manager":manager_check})
 
 @app.get("/index")
-def main():
-    return FileResponse('public/index.html')
+def main(request: Request, username: str = Cookie(None)):
+    username = serializer.loads(username)
+    manager_check = is_manager(username, manager)  # 여기서 전역 변수 manager를 전달해야 합니다.
+    return templates.TemplateResponse('index.html', context={'request': request, "username":username, "manager":manager_check})
 
 @app.get("/register")
 def register(request: Request):
@@ -105,10 +110,11 @@ async def logout(request: Request):
 @app.get("/view_board/{post_id}")
 async def view_board(post_id: int, db: Session = Depends(engineconn().sessionmaker), request: Request = None, username: str = Cookie(None)):
     username=serializer.loads(username)
+    manager_check = is_manager(username, manager)
     post = db.query(Board).filter(Board.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username})
+    return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username, "manager_check":manager_check})
 
 @app.get("/modify_post/{post_id}")
 async def modify_post(post_id: int,db: Session = Depends(engineconn().sessionmaker), request: Request = None, username: str = Cookie(None)):

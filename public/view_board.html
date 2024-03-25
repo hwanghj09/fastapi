@@ -66,7 +66,7 @@
         <div class="post-content">
             {{ post.content }}
         </div>
-        {% if username == post.author or username == 'hwanghj09' %}
+        {% if username == post.author or manager_check == True%}
         <center><button onclick="modifyPost()" class="modification-button">수정하기</button></center>
         {% endif %}
 
