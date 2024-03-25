@@ -58,13 +58,19 @@
             <tr>
                 <td>{{ User.id }}</td>
                 <td>{{ User.name }}</td>
-                <td><a href="/admin/users/reset_password/{{ User.id }}">초기화</a></td>
+                <td><button onclick="confirmResetPassword({{ User.id }})">초기화</button></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     <center><button onclick="goToIndex()" style="margin-top: 10px; font-size: 16px; font-weight: bold;">돌아가기</button></center>
     <script>
+        function confirmResetPassword(userId) {
+            if (confirm("정말로 이 사용자의 비밀번호를 초기화 하시겠습니까?")) {
+                window.location.href = "/admin/users/reset_password/" + userId;
+            }
+        }
+
         function goToIndex() {
             window.location.href = "/admin";
         }

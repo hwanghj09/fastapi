@@ -14,22 +14,18 @@ engine = engineconn()
 session = engine.sessionmaker()
 SECRET_KEY = "JEOFIGHTING"
 serializer = URLSafeSerializer(SECRET_KEY)
-manager = ["hwanghj09"]
+manager = ["hwanghj09", "dreami"]
 
 def is_manager(username: str, managers: List[str]) -> bool:
     return username in managers
 
 @app.get("/")
-def main(request: Request, username: str = Cookie(None)):
-    username = serializer.loads(username)
-    manager_check = is_manager(username, manager)  # 여기서 전역 변수 manager를 전달해야 합니다.
-    return templates.TemplateResponse('index.html', context={'request': request, "username":username, "manager":manager_check})
+def main(request: Request):
+    return templates.TemplateResponse('index.html', context={'request': request})
 
 @app.get("/index")
-def main(request: Request, username: str = Cookie(None)):
-    username = serializer.loads(username)
-    manager_check = is_manager(username, manager)  # 여기서 전역 변수 manager를 전달해야 합니다.
-    return templates.TemplateResponse('index.html', context={'request': request, "username":username, "manager":manager_check})
+def main(request: Request):
+    return templates.TemplateResponse('index.html', context={'request': request})
 
 @app.get("/register")
 def register(request: Request):
@@ -97,9 +93,9 @@ async def reset_password(user_id: int, db: Session = Depends(engineconn().sessio
 @app.get("/check_login")
 async def check_login(username: str = Cookie(None)):
     if username:
-        return {"login" : True}, FileResponse('public/index.html')
+        return {"login": True}, FileResponse('public/index.html')
     else:
-        return {"login" : False}, FileResponse('public/index.html')
+        return {"login": False}, FileResponse('public/index.html')
     
 @app.get("/logout")
 async def logout(request: Request):
@@ -110,11 +106,10 @@ async def logout(request: Request):
 @app.get("/view_board/{post_id}")
 async def view_board(post_id: int, db: Session = Depends(engineconn().sessionmaker), request: Request = None, username: str = Cookie(None)):
     username=serializer.loads(username)
-    manager_check = is_manager(username, manager)
     post = db.query(Board).filter(Board.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username, "manager_check":manager_check})
+    return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username})
 
 @app.get("/modify_post/{post_id}")
 async def modify_post(post_id: int,db: Session = Depends(engineconn().sessionmaker), request: Request = None, username: str = Cookie(None)):

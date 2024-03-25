@@ -119,7 +119,6 @@
             font-size: 18px;
             border-bottom: 1px solid #555;
             transition: background-color 0.3s;
-            overflow-y: auto;
         }
         
         .sider a:hover {
@@ -205,8 +204,7 @@
     <div class="sider" id="sider">
         <a href="/community">게시판</a>
         <a href="#">메뉴 2</a>
-        <a href="#">메뉴 3</a> {% if manager_check == True %}
-        <a href="/admin">관리자</a> {% endif %}
+        <a href="#">메뉴 3</a>
     </div>
     <div class="시작버튼"><button onclick="scrollToDescription()">시작하기</button></div>
     <div class="내소개" style="bottom: -300px;">
@@ -288,7 +286,6 @@
             fetch('/check_login')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data[0]);
                     const login = data[0].login; // 서버로부터 받은 데이터에서 login 값을 추출하여 변수에 할당
                     if (login) {
                         document.getElementsByClassName('로그인회원가입문의')[0].style.display = 'none';
@@ -297,7 +294,6 @@
                         document.getElementsByClassName('로그인회원가입문의')[0].style.display = 'block';
                         document.getElementsByClassName('로그아웃문의')[0].style.display = 'none';
                     }
-
                 })
                 .catch(error => {
                     console.error('Error checking cookie:', error);
