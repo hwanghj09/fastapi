@@ -40,17 +40,18 @@
         }
         
         .modification-button {
-text-weight:bold;
+            background-color: #fff;
             border: none;
-            color: black;
+            color: rgb(0, 0, 0);
             padding: 15px 32px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 16px;
+            font-size: 20px;
             margin: 4px 2px;
             cursor: pointer;
             border-radius: 5px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -65,9 +66,10 @@ text-weight:bold;
         <div class="post-content">
             {{ post.content }}
         </div>
-        {% if username == post.author %}
+        {% if username == post.author or username == 'hwanghj09' %}
         <center><button onclick="modifyPost()" class="modification-button">수정하기</button></center>
         {% endif %}
+
         <center><button onclick="goToIndex()" style="margin-top: 20px; font-size: 17px; font-weight: bold; background-color: white; border: none;">돌아가기</button></center>
     </div>
     <script>

@@ -51,6 +51,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -66,10 +67,29 @@
             <button type="submit">Save Changes</button>
         </form>
         <button onclick="goToIndex()">Cancel</button>
+        <button onclick="deletePost({{ post.id }})">Delete</button>
+        <!-- postId 전달 -->
     </div>
     <script>
         function goToIndex() {
             window.location.href = "/view_board/{{ post.id }}";
+        }
+
+        function deletePost(postId) {
+            fetch(`/delete_post/${postId}`, {
+                    method: 'DELETE',
+                    credentials: 'same-origin' // 쿠키를 함께 보내기 위해 필요
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete post');
+                    }
+                    window.location.href = "/community";
+                })
+                .catch(error => {
+                    console.error('Error deleting post:', error);
+                    // 오류 처리 로직 추가
+                });
         }
     </script>
 </body>

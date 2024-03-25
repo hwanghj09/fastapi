@@ -6,6 +6,7 @@ from database import engineconn
 from model import User, Inquiry, Board
 from itsdangerous import URLSafeSerializer
 from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 templates = Jinja2Templates(directory='./public')
@@ -13,7 +14,10 @@ engine = engineconn()
 session = engine.sessionmaker()
 SECRET_KEY = "JEOFIGHTING"
 serializer = URLSafeSerializer(SECRET_KEY)
+manager = ["hwanghj09"]
 
+def is_manager(username: str, managers: List[str]) -> bool:
+    return username in managers
 @app.get("/")
 def main():
     return FileResponse('public/index.html')
@@ -36,7 +40,9 @@ async def community(request: Request, db: Session = Depends(engineconn().session
     return templates.TemplateResponse("community.html", {"request": request, "posts": posts})
 
 @app.get("/create_post")
-async def create_post(request: Request):
+async def create_post(request: Request, username: str = Cookie(None)):
+    if(username == None):
+        return templates.TemplateResponse("login.html", {"request": request})
     return templates.TemplateResponse("create_post.html", {"request": request})
 
 
@@ -47,14 +53,14 @@ def inquiry(request: Request):
 @app.get("/admin")
 def admin(request: Request, username: str = Cookie(None)):
     username = serializer.loads(username)
-    if username != "hwanghj09":
+    if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     return templates.TemplateResponse('admin.html', context={'request': request})
 
 @app.get("/admin/inquiries")
 async def get_inquiries(request: Request, db: Session = Depends(engineconn().sessionmaker) , username: str = Cookie(None)):
     username = serializer.loads(username)
-    if username != "hwanghj09":
+    if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     inquiries = db.query(Inquiry).all()  # 모든 문의 내역을 가져옵니다.
     return templates.TemplateResponse("admin_inquiries.html", {"request": request, "inquiries": inquiries})
@@ -62,7 +68,7 @@ async def get_inquiries(request: Request, db: Session = Depends(engineconn().ses
 @app.get("/admin/users")
 async def get_inquiries(request: Request, db: Session = Depends(engineconn().sessionmaker) , username: str = Cookie(None)):
     username = serializer.loads(username)
-    if username != "hwanghj09":
+    if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     Users = db.query(User).all()  # 모든 문의 내역을 가져옵니다.
     return templates.TemplateResponse("admin_users.html", {"request": request, "Users": Users})
@@ -70,7 +76,7 @@ async def get_inquiries(request: Request, db: Session = Depends(engineconn().ses
 @app.get("/admin/users/reset_password/{user_id}")
 async def reset_password(user_id: int, db: Session = Depends(engineconn().sessionmaker), username: str = Cookie(None)):
     username = serializer.loads(username)
-    if username != "hwanghj09":
+    if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -102,15 +108,15 @@ async def view_board(post_id: int, db: Session = Depends(engineconn().sessionmak
     post = db.query(Board).filter(Board.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    if(post.author == username):
-        return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username})
-    return templates.TemplateResponse("view_board.html", {"request": request, "post": post})
+    return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username})
 
 @app.get("/modify_post/{post_id}")
-async def modify_post(post_id: int,db: Session = Depends(engineconn().sessionmaker), request: Request = None):
+async def modify_post(post_id: int,db: Session = Depends(engineconn().sessionmaker), request: Request = None, username: str = Cookie(None)):
     post = db.query(Board).filter(Board.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+    if(username==post.author):
+        return templates.TemplateResponse("view_board.html", {"request": request})
     return templates.TemplateResponse("modify_post.html", {"request": request, "post": post})
 
 #------------------------------------------------------------------------------------
@@ -144,7 +150,6 @@ def process_login(request: Request, username: str = Form(...), password: str = F
     encrypted_username = serializer.dumps(username)
     response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
 
-    
     return response
 
 
@@ -191,4 +196,21 @@ async def modify_post(post_id: int, request: Request, title: str = Form(...), co
     db.commit()  # Save the changes to the database
 
     return RedirectResponse(url=f"/view_board/{post_id}", status_code=303)
+
+@app.delete("/delete_post/{post_id}")
+async def delete_post(post_id: int, request: Request, username: str = Cookie(None), db: Session = Depends(engineconn().sessionmaker)):
+    username = serializer.loads(username)
+    post = db.query(Board).filter(Board.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    if(post.author != username and is_manager(username, manager)==False):
+        raise HTTPException(status_code=403, detail="You are not authorized to delete this post")
+
+    # Delete the post from the database
+    db.delete(post)
+    db.commit()
+
+    return RedirectResponse(url="/community", status_code=303)
+
+
 
