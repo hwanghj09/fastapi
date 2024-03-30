@@ -58,6 +58,9 @@ def admin(request: Request, username: str = Cookie(None)):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     return templates.TemplateResponse('admin.html', context={'request': request})
 
+@app.get("/3d")
+def model(request:Request):
+    return templates.TemplateResponse('3d.html', context={'request': request})
 @app.get("/admin/inquiries")
 async def get_inquiries(request: Request, db: Session = Depends(engineconn().sessionmaker) , username: str = Cookie(None)):
     username = serializer.loads(username)
