@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+    <style>
+        body {
+            background-color: white;
+        }
+        
+        h1 {
+            padding: 20px;
+        }
+        
+        a {
+            color: black;
+            display: inline;
+            margin: 20px;
+            text-decoration-line: none;
+        }
+        
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+        
+        .product {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 200px;
+        }
+        
+        .product img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .product h2 {
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .product p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>
+            <a href="/zizon-shopping">zizon shopping</a>
+        </h1>
+    </center>
+    <hr>
+    <center>
+        <a href="/zizon-shopping">About</a>
+        <a href="/shop">Shop</a>
+        <a href="/guide">Guide</a>
+    </center>
+    <hr>
+    <div class="product-container">
+        {% for product in products %}
+        <div class="product">
+            <a href="/product/{{ product.id }}">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <h2>{{ product.name }}</h2>
+                <p>${{ product.price }}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

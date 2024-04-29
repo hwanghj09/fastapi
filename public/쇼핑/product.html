@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쇼핑</title>
+    <style>
+        body {
+            background-color: white;
+        }
+        
+        h1 {
+            padding: 20px;
+        }
+        
+        a {
+            color: black;
+            display: inline;
+            margin: 20px;
+            text-decoration-line: none;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <h1>
+            <a href="/zizon-shopping">zizon shopping</a>
+        </h1>
+    </center>
+    <hr>
+    <center>
+        <img src="{{ product.image_url }}" style="width: 30%; height: 30%;">
+        <h1>{{product.name}}</h1>
+        <h3>{{product.price}}</h3>
+        <button onclick="requestPay()">결제하기</button>
+    </center>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script>
+        var IMP = window.IMP; // 생략가능
+        IMP.init('bd6s3v6nHFQgKenVd5aBaB1LjFicIo3mySpF9AyroeZQGmqkQVGl2ruOZMH3P8vFAqwnQwvCl8MFRTsj');
+
+        function requestPay() {
+            IMP.init('iamport'); //iamport 대신 자신의 "가맹점 식별코드"를 사용
+            IMP.request_pay({
+                pg: "inicis",
+                pay_method: "card",
+                merchant_uid: 'merchant_' + new Date().getTime(),
+                name: '결제테스트',
+                amount: 200
+            }, function(rsp) { // callback
+                if (rsp.success) {
+                    console.log("1");
+                } else {
+                    console.log("2");
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

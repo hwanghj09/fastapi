@@ -1,6 +1,6 @@
 # model.py
 
-from sqlalchemy import Column, Integer, String, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, Text,Float
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
@@ -28,3 +28,11 @@ class Board(Base):
     author = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+class Product(Base):
+    __tablename__ = 'products'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    price = Column(Float)
+    image_url = Column(String)
