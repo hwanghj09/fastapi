@@ -140,7 +140,7 @@ def paintboard(request: Request):
 def paintboard(request: Request):
     return templates.TemplateResponse("쇼핑/index.html", {"request": request})
 @app.get("/shop")
-async def paintboard(request: Request, db: Shoppingsession = Depends(Shoppingengineconn().sessionmaker)):
+async def shop(request: Request, db: Shoppingsession = Depends(Shoppingengineconn().sessionmaker)):
     products = db.query(Product).all()
     return templates.TemplateResponse("쇼핑/shop.html", {"request": request, "products": products})
 @app.get("/product/{product_id}")
@@ -150,8 +150,12 @@ async def product_detail(product_id: int, request: Request, db: Shoppingsession 
         raise HTTPException(status_code=404, detail="Product not found")
     return templates.TemplateResponse("쇼핑/product.html", {"request": request, "product": product})
 @app.get("/guide")
-def paintboard(request: Request):
+def guide(request: Request):
     return templates.TemplateResponse("쇼핑/guide.html", {"request": request})
+
+@app.get("/spot")
+def spot(request: Request):
+    return templates.TemplateResponse("spot/index.html", {"request": request})
 #------------------------------------------------------------------------------------
 
 @app.post("/post_register")
