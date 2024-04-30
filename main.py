@@ -248,35 +248,3 @@ async def delete_post(post_id: int, request: Request, username: str = Cookie(Non
     db.commit()
 
     return RedirectResponse(url="/community", status_code=303)
-
-@app.get("/chat")
-def chat(request: Request):
-    return templates.TemplateResponse("chat.html", {"request": request})
-
-@app.websocket("/chat")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    websocket_list.append(websocket)  # WebSocket 연결을 리스트에 추가
-
-    # 이전에 저장된 메시지를 클라이언트에 전송
-    for message in message_history:
-        await websocket.send_text(message)
-
-    try:
-        while True:
-            # 클라이언트로부터 메시지를 받습니다.
-            message = await websocket.receive_text()
-
-            # 연결된 모든 클라이언트에게 메시지를 다시 전송합니다.
-            for client in websocket_list:
-                await client.send_text(message)
-            
-            # 받은 메시지를 메시지 기록에 추가
-            message_history.append(message)
-    finally:
-        # 연결이 종료되면 WebSocket 리스트에서 연결을 제거합니다.
-        websocket_list.remove(websocket)
-        
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
