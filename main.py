@@ -12,10 +12,12 @@ from typing import List
 
 app = FastAPI()
 templates = Jinja2Templates(directory='./public')
+
 Userengine = Usersengineconn()
-Shoppingengine=Shoppingengineconn()
 Usersession = Userengine.sessionmaker()
+Shoppingengine = Shoppingengineconn()
 Shoppingsession = Shoppingengine.sessionmaker()
+
 SECRET_KEY = "JEOFIGHTING"
 serializer = URLSafeSerializer(SECRET_KEY)
 manager = ["hwanghj09", "dreami"]
@@ -155,7 +157,19 @@ def guide(request: Request):
 
 @app.get("/spot")
 def spot(request: Request):
-    return templates.TemplateResponse("spot/index.html", {"request": request})
+    return templates.TemplateResponse("spot/home.html", {"request": request})
+@app.get("/spot/signup")
+def spot(request: Request):
+    return templates.TemplateResponse("spot/Signup.html", {"request": request})
+@app.get("/spot/login")
+def spot(request: Request):
+    return templates.TemplateResponse("spot/Login.html", {"request": request})
+@app.get("/spot/AIQ.")
+def spot(request: Request):
+    return templates.TemplateResponse("spot/AIQ..html", {"request": request})
+@app.get("/spot/about")
+def spot(request: Request):
+    return templates.TemplateResponse("spot/aboutSpot+.html", {"request": request})
 #------------------------------------------------------------------------------------
 
 @app.post("/post_register")
@@ -188,6 +202,38 @@ def process_login(request: Request, username: str = Form(...), password: str = F
     response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
 
     return response
+
+@app.post("/spot/post_register")
+def process_register(username: str = Form(...), password: str = Form(...)):
+    existing_user = Usersession.query(User).filter_by(name=username).first()
+    if existing_user:
+        return FileResponse('public/spot/Login.html')
+    new_user = User(name=username, password=password)
+    Usersession.add(new_user)
+    Usersession.commit()
+    
+    response = FileResponse("public/spot/home.html")  # 회원가입 성공 시 /index로 이동
+    
+    # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
+    encrypted_username = serializer.dumps(username)
+    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
+    
+    return response
+
+@app.post("/spot/post_login")
+def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
+    user = Usersession.query(User).filter_by(name=username, password=password).first()
+    if not user:
+        return FileResponse('public/spot/Login.html')  # 로그인 실패 시 로그인 페이지로 리다이렉트
+    
+    response = FileResponse('public/spot/home.html')  # 로그인 성공 시 /index.html 파일을 반환
+    
+    # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
+    encrypted_username = serializer.dumps(username)
+    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
+
+    return response
+
 
 
 @app.post("/submit_contact_form")

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home : Spot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@900&family=Jua&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Jua', sans-serif;
+            background-color: #f0f0f0;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header-container .logo {
+            font-family: 'Comfortaa', Jua;
+            color: #ffc107;
+            font-size: 24px;
+            font-weight: 1000;
+        }
+        .header-container .page-title {
+            font-family: 'Comfortaa', Jua;
+            color: #cccccc;
+            font-size: 20px;
+            font-weight: 1000;
+        }
+        .container {
+            padding: 20px;
+        }
+        .box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .icon-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .icon-box {
+            width: 45%;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .icon-box img {
+            width: 50px;
+            height: 50px;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: #ffc107;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer img {
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="logo">Spot</div>
+        <div class="page-title">Home</div>
+    </div>
+    <div class="container">
+        <div class="box">
+            <img src="banner.png" alt="Banner" style="width: 100%;">
+        </div>
+        <div class="header">나에게 맞는 공부방법</div>
+        <div class="icon-container">
+            <div class="icon-box">
+                <img src="icon1.png" alt="공부유형 검사하기">
+                <div>공부유형 검사하기</div>
+            </div>
+            <div class="icon-box">
+                <img src="icon2.png" alt="벼락치기 형">
+                <div>벼락치기 형</div>
+            </div>
+        </div>
+        <div class="header">과목별 AI문제보기</div>
+        <div class="icon-container">
+            <div class="icon-box">
+                <img src="icon3.png" alt="국어">
+                <div>국어</div>
+            </div>
+            <div class="icon-box">
+                <img src="icon4.png" alt="수학">
+                <div>수학</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <img src="icon1.png" alt="icon1">
+        <img src="icon2.png" alt="icon2">
+        <img src="icon3.png" alt="icon3">
+        <img src="icon4.png" alt="icon4">
+    </div>
+</body>
+</html>
