@@ -1,48 +1,67 @@
-<br/>
-<br/>
+[![example-flask](https://github.com/koyeb/example-flask/actions/workflows/deploy.yaml/badge.svg)](https://github.com/koyeb/example-flask/actions)
 
-<p align="center">
-<img src="https://files.cloudtype.io/logo/cloudtype-logo-horizontal-black.png" width="50%" alt="Cloudtype"/>
-</p>
-
-<br/>
-<br/>
-
-# FastAPI
-
-Python으로 구현된 FastAPI 어플리케이션 템플릿입니다.
-
-## 🖇️ 준비 및 확인사항
-
-### 지원 Python 버전
-- 3.7, 3.8, 3.9, 3.10, 3.11
-- FastAPI는 최소 3.7 버전의 Python를 필요로 합니다.
-- ⚠️ 로컬/테스트 환경과 클라우드타입에서 설정한 Python 버전이 상이한 경우 정상적으로 빌드되지 않을 수 있습니다.
-
-### 패키지 명세
-- 빌드 시 어플리케이션에 사용된 패키지를 설치하기 위해서는 `requirements.txt` 파일이 반드시 필요합니다.
-
-## ⌨️ 명령어
-
-### Start
-
-```bash
-uvicorn main:app --host=0.0.0.0 --port=8000
-```
+<div align="center">
+  <a href="https://koyeb.com">
+    <img src="https://www.koyeb.com/static/images/icons/koyeb.svg" alt="Logo" width="80" height="80">
+  </a>
+  <h3 align="center">Koyeb Serverless Platform</h3>
+  <p align="center">
+    Deploy a Flask application on Koyeb
+    <br />
+    <a href="https://koyeb.com">Learn more about Koyeb</a>
+    ·
+    <a href="https://koyeb.com/docs">Explore the documentation</a>
+    ·
+    <a href="https://koyeb.com/tutorials">Discover our tutorials</a>
+  </p>
+</div>
 
 
-## 🏷️ 환경변수
+## About Koyeb and the Flask example application
 
+Koyeb is a developer-friendly serverless platform to deploy apps globally. No-ops, servers, or infrastructure management.
+This repository contains a Flask application you can deploy on the Koyeb serverless platform for testing.
 
-## 💬 문제해결
+This example application is designed to show how a Flask application can be deployed on Koyeb.
 
-- [클라우드타입 Docs](https://docs.cloudtype.io/)
+## Getting Started
 
-- [클라우드타입 FAQ](https://help.cloudtype.io/guide/faq)
+Follow the steps below to deploy and run the Flask application on your Koyeb account.
 
-- [Discord](https://discord.gg/U7HX4BA6hu)
+### Requirements
 
+You need a Koyeb account to successfully deploy and run this application. If you don't already have an account, you can sign-up for free [here](https://app.koyeb.com/auth/signup).
 
-## 📄 License
+### Deploy using the Koyeb button
 
-[MIT](https://github.com/tiangolo/fastapi/blob/master/LICENSE)
+The fastest way to deploy the Flask application is to click the **Deploy to Koyeb** button below.
+
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/koyeb/example-flask&branch=main&name=flask-on-koyeb)
+
+Clicking on this button brings you to the Koyeb App creation page with everything pre-set to launch this application.
+
+_To modify this application example, you will need to fork this repository. Checkout the [fork and deploy](#fork-and-deploy-to-koyeb) instructions._
+
+### Fork and deploy to Koyeb
+
+If you want to customize and enhance this application, you need to fork this repository.
+
+If you used the **Deploy to Koyeb** button, you can simply link your service to your forked repository to be able to push changes.
+Alternatively, you can manually create the application as described below.
+
+On the [Koyeb Control Panel](//app.koyeb.com/apps), on the **Overview** tab, click the **Create Web Service** button to begin.
+
+1. Select **GitHub** as the deployment method.
+2. In the repositories list, select the repository you just forked.
+3. In the **Builder** section, click the **override** toggle associated with the **Run command** and enter `gunicorn app:app` in the field.
+4. Choose a name for your App and Service, i.e `flask-on-koyeb`, and click **Deploy**.
+
+You land on the deployment page where you can follow the build of your Flask application. Once the build is completed, your application is being deployed and you will be able to access it via `<YOUR_APP_NAME>-<YOUR_ORG_NAME>.koyeb.app`.
+
+## Contributing
+
+If you have any questions, ideas or suggestions regarding this application sample, feel free to open an [issue](//github.com//koyeb/example-flask/issues) or fork this repository and open a [pull request](//github.com/koyeb/example-flask/pulls).
+
+## Contact
+
+[Koyeb](https://www.koyeb.com) - [@gokoyeb](https://twitter.com/gokoyeb) - [Slack](http://slack.koyeb.com/)

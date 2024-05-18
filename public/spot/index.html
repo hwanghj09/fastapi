@@ -34,6 +34,27 @@
             opacity: 1;
         }
         
+        .index div {
+            background-color: rgb(255, 255, 255);
+            padding-top: 20px;
+            border-radius: 10px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .first-div {
+            width: 220%;
+            margin-left: 50px;
+            border-radius: 20px;
+        }
+        
+        .right-align {
+            width: 240px;
+            height: 340px;
+            float: right;
+            margin-right: 20px;
+        }
+        
         @keyframes stretch {
             0% {
                 transform: scale(0);
@@ -65,12 +86,16 @@
     </center>
     <div class="index">
         <h2 style="margin-left: 50px;">Spot</h2>
-        <div style="background-color: rgb(255, 255, 255); padding-top: 20px; border-radius: 20px; height: 100px;"></div>
+        <div class="first-div"></div>
         <h3 style="margin-left: 20px;">나에게 맞는 공부방법</h3>
-        <div style="background-color: rgb(255, 255, 255); padding-top: 20px; border-radius: 10px; width: 120px; height: 100px;"></div>
-        <div style="background-color: rgb(255, 255, 255); padding-top: 20px; border-radius: 10px; width: 120px; height: 100px;"></div>
-        <div style="background-color: rgb(255, 255, 255); padding-top: 20px; border-radius: 10px; width: 120px; height: 100px;"></div>
+        <div class="right-align"></div>
+        <div class="right-align"></div>
+        <div class="right-align"></div>
         <h3 style="margin-left: 20px;">과목별 AI문제보기</h3>
+        <br>
+        <div class="right-align"></div>
+        <div class="right-align"></div>
+        <div class="right-align"></div>
     </div>
     <script>
         document.getElementById('spot').addEventListener('animationend', function() {
