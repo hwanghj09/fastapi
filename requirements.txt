@@ -15,7 +15,6 @@ blinker==1.6.2
 briefcase==0.3.16
 bsdiff4==1.2.4
 build==1.0.3
-buildozer==1.5.1.dev0
 bundler==0.1.0
 CacheControl==0.13.1
 cachetools==5.3.2
