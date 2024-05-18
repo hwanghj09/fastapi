@@ -1,6 +1,5 @@
 uvloop==0.16.0
 watchgod==0.8.2
-websockets==10.3
 SQLAlchemy==2.0.28
 fastapi==0.110.0
 uvicorn==0.27.1
