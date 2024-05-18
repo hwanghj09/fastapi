@@ -1,13 +1,1 @@
-uvloop==0.16.0
-watchgod==0.8.2
-websockets==10.3
-SQLAlchemy==2.0.28
-fastapi==0.110.0
-uvicorn==0.27.1
-Jinja2==3.1.2
-Js2Py==0.74
-keyboard==0.13.5
-PyMySQL==1.1.0
-python-multipart==0.0.9
-itsdangerous==2.1.2
-passlib==1.7.4
+pip3 freeze > requirements.txt
