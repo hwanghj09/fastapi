@@ -1,31 +1,27 @@
-from sqlalchemy import *
-from sqlalchemy.orm import sessionmaker
+import psycopg2
+from psycopg2 import sql
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-DB_URL = 'postgresql+psycopg2://hwanghj09:TZy2fh4gbYku@ep-quiet-water-a2l0cgw1.eu-central-1.pg.koyeb.app/koyebdb'
 class Usersengineconn:
     def __init__(self):
-        self.engine = create_engine(DB_URL, pool_recycle = 500)
-        self.SessionLocal = sessionmaker(bind=self.engine)
+        self.conn = psycopg2.connect(
+            host="dpg-cp4pc6q1hbls73f4lf80-a.oregon-postgres.render.com",
+            database="db_fahq",
+            user="hwanghj09",
+            password="ru0U1ZfFZvtR5ppaKbr85ZqjDZL5tcmo"
+        )
 
     def sessionmaker(self):
-        Session = sessionmaker(bind=self.engine)
-        session = Session()
-        return session
+        return self.conn
 
-    def connection(self):
-        conn = self.engine.connect()
-        return conn
-        
 class Shoppingengineconn:
     def __init__(self):
-        self.engine = create_engine(DB_URL, pool_recycle = 500)
-        self.SessionLocal = sessionmaker(bind=self.engine)
+        self.conn = psycopg2.connect(
+            host="dpg-cp4pc6q1hbls73f4lf80-a.oregon-postgres.render.com",
+            database="db_fahq",
+            user="hwanghj09",
+            password="ru0U1ZfFZvtR5ppaKbr85ZqjDZL5tcmo"
+        )
 
     def sessionmaker(self):
-        Session = sessionmaker(bind=self.engine)
-        session = Session()
-        return session
-
-    def connection(self):
-        conn = self.engine.connect()
-        return conn
+        return self.conn

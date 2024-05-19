@@ -59,20 +59,20 @@
 <body>
     <div class="container">
         <h1>Modify Post</h1>
-        <form action="/modify_post/{{ post.id }}" method="post">
+        <form action="/modify_post/{{ post[0] }}" method="post">
             <label for="title">Title:</label><br>
-            <input type="text" id="title" name="title" value="{{ post.title }}" required><br>
+            <input type="text" id="title" name="title" value="{{ post[1] }}" required><br>
             <label for="content">Content:</label><br>
-            <textarea id="content" name="content" required>{{ post.content }}</textarea><br><br>
+            <textarea id="content" name="content" required>{{ post[2] }}</textarea><br><br>
             <button type="submit">Save Changes</button>
         </form>
         <button onclick="goToIndex()">Cancel</button>
-        <button onclick="deletePost({{ post.id }})">Delete</button>
+        <button onclick="deletePost({{ post[0] }})">Delete</button>
         <!-- postId 전달 -->
     </div>
     <script>
         function goToIndex() {
-            window.location.href = "/view_board/{{ post.id }}";
+            window.location.href = "/view_board/{{ post[0] }}";
         }
 
         function deletePost(postId) {

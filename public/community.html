@@ -74,10 +74,10 @@
             </thead>
             <tbody>
                 {% for post in posts %}
-                <tr onclick="goToViewBoard('{{ post.id }}')">
-                    <td>{{ post.title }}</td>
-                    <td>{{ post.author }}</td>
-                    <td>{{ post.created_at }}</td>
+                <tr onclick="goToViewBoard('{{ post[0] }}')">
+                    <td>{{ post[1] }}</td>
+                    <td>{{ post[4] }}</td>
+                    <td>{{ post[3] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

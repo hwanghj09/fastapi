@@ -1,31 +1,34 @@
-from fastapi import FastAPI, HTTPException, Form, Request, Cookie, Response, Depends,WebSocket
+from fastapi import FastAPI, HTTPException, Form, Request, Cookie, Response, Depends, WebSocket
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import session
-from database import Usersengineconn
-from database import Shoppingengineconn
-from model import User, Inquiry, Board, Product
 from itsdangerous import URLSafeSerializer
 from pydantic import BaseModel
 from typing import List
-
+import psycopg2
+from psycopg2 import sql
+import os
+from datetime import datetime
 
 app = FastAPI()
 templates = Jinja2Templates(directory='./public')
 
-Userengine = Usersengineconn()
-Usersession = Userengine.sessionmaker()
-Shoppingengine = Shoppingengineconn()
-Shoppingsession = Shoppingengine.sessionmaker()
+# 데이터베이스 연결 정보
+USER_DB_CONFIG = {
+    "host": "dpg-cp4pc6q1hbls73f4lf80-a.oregon-postgres.render.com",
+    "database": "db_fahq",
+    "user": "hwanghj09",
+    "password": "ru0U1ZfFZvtR5ppaKbr85ZqjDZL5tcmo"
+}
 
 SECRET_KEY = "JEOFIGHTING"
 serializer = URLSafeSerializer(SECRET_KEY)
 manager = ["hwanghj09", "dreami"]
-websocket_list: List[WebSocket] = []
-message_history: List[str] = []
 
 def is_manager(username: str, managers: List[str]) -> bool:
     return username in managers
+
+def get_db_connection(db_config):
+    return psycopg2.connect(**db_config)
 
 @app.get("/")
 def main(request: Request):
@@ -44,16 +47,20 @@ def login(request: Request):
     return templates.TemplateResponse('login.html', context={'request': request})
 
 @app.get("/community")
-async def community(request: Request, db: Usersession = Depends(Usersengineconn().sessionmaker)):
-    posts = db.query(Board).all()
+async def community(request: Request):
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM board")
+    posts = cursor.fetchall()
+    cursor.close()
+    conn.close()
     return templates.TemplateResponse("community.html", {"request": request, "posts": posts})
 
 @app.get("/create_post")
 async def create_post(request: Request, username: str = Cookie(None)):
-    if(username == None):
+    if username is None:
         return templates.TemplateResponse("login.html", {"request": request})
     return templates.TemplateResponse("create_post.html", {"request": request})
-
 
 @app.get("/inquiry")
 def inquiry(request: Request):
@@ -67,39 +74,48 @@ def admin(request: Request, username: str = Cookie(None)):
     return templates.TemplateResponse('admin.html', context={'request': request})
 
 @app.get("/3d")
-def model(request:Request):
+def model(request: Request):
     return templates.TemplateResponse('3d.html', context={'request': request})
+
 @app.get("/admin/inquiries")
-async def get_inquiries(request: Request, db: Usersession = Depends(Usersengineconn().sessionmaker) , username: str = Cookie(None)):
+async def get_inquiries(request: Request, username: str = Cookie(None)):
     username = serializer.loads(username)
     if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
-    inquiries = db.query(Inquiry).all()  # 모든 문의 내역을 가져옵니다.
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM inquiry")
+    inquiries = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    print(inquiries)
     return templates.TemplateResponse("admin_inquiries.html", {"request": request, "inquiries": inquiries})
 
 @app.get("/admin/users")
-async def get_inquiries(request: Request, db: Usersession = Depends(Usersengineconn().sessionmaker) , username: str = Cookie(None)):
+async def get_users(request: Request, username: str = Cookie(None)):
     username = serializer.loads(username)
     if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
-    Users = db.query(User).all()  # 모든 문의 내역을 가져옵니다.
-    return templates.TemplateResponse("admin_users.html", {"request": request, "Users": Users})
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_table")
+    users = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return templates.TemplateResponse("admin_users.html", {"request": request, "Users": users})
 
 @app.get("/admin/users/reset_password/{user_id}")
-async def reset_password(user_id: int, db: Usersession = Depends(Usersengineconn().sessionmaker), username: str = Cookie(None)):
+async def reset_password(user_id: int, username: str = Cookie(None)):
     username = serializer.loads(username)
     if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    # 비밀번호를 변경하여 저장
-    user.password = "1234"
-    db.commit()
-    
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users_table SET password = %s WHERE id = %s", ("1234", user_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
     return RedirectResponse(url="/admin/users", status_code=303)
-
 
 @app.get("/check_login")
 async def check_login(username: str = Cookie(None)):
@@ -107,31 +123,38 @@ async def check_login(username: str = Cookie(None)):
         return {"login": True}, FileResponse('public/index.html')
     else:
         return {"login": False}, FileResponse('public/index.html')
-    
+
 @app.get("/logout")
 async def logout(request: Request):
-    response = templates.TemplateResponse("index.html", {"request":request})
+    response = templates.TemplateResponse("index.html", {"request": request})
     response.delete_cookie(key="username")
     return response
 
 @app.get("/view_board/{post_id}")
-async def view_board(post_id: int, db: Usersession = Depends(Usersengineconn().sessionmaker), request: Request = None, username: str = Cookie(None), manager_check: bool = False):
-    username=serializer.loads(username)
-    post = db.query(Board).filter(Board.id == post_id).first()
-    manager_check=False
-    if is_manager(username, manager)==True:
-        manager_check=True
+async def view_board(post_id: int, request: Request, username: str = Cookie(None)):
+    username = serializer.loads(username)
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM board WHERE id = %s", (post_id,))
+    post = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+    manager_check = is_manager(username, manager)
     return templates.TemplateResponse("view_board.html", {"request": request, "post": post, "username": username, "manager_check": manager_check})
 
 @app.get("/modify_post/{post_id}")
-async def modify_post(post_id: int,db: Usersession = Depends(Usersengineconn().sessionmaker), request: Request = None, username: str = Cookie(None)):
-    post = db.query(Board).filter(Board.id == post_id).first()
+async def modify_post(post_id: int, request: Request, username: str = Cookie(None)):
+    username = serializer.loads(username)
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM board WHERE id = %s", (post_id,))
+    post = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    if(username==post.author):
-        return templates.TemplateResponse("view_board.html", {"request": request})
     return templates.TemplateResponse("modify_post.html", {"request": request, "post": post})
 
 @app.get("/paint_board")
@@ -139,18 +162,31 @@ def paintboard(request: Request):
     return templates.TemplateResponse("paint_board.html", {"request": request})
 
 @app.get("/zizon-shopping")
-def paintboard(request: Request):
+def zizon_shopping(request: Request):
     return templates.TemplateResponse("쇼핑/index.html", {"request": request})
+
 @app.get("/shop")
-async def shop(request: Request, db: Shoppingsession = Depends(Shoppingengineconn().sessionmaker)):
-    products = db.query(Product).all()
+async def shop(request: Request):
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
+    cursor.close()
+    conn.close()
     return templates.TemplateResponse("쇼핑/shop.html", {"request": request, "products": products})
+
 @app.get("/product/{product_id}")
-async def product_detail(product_id: int, request: Request, db: Shoppingsession = Depends(Shoppingengineconn().sessionmaker)):
-    product = db.query(Product).filter(Product.id == product_id).first()
+async def product_detail(product_id: int, request: Request):
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+    product = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return templates.TemplateResponse("쇼핑/product.html", {"request": request, "product": product})
+
 @app.get("/guide")
 def guide(request: Request):
     return templates.TemplateResponse("쇼핑/guide.html", {"request": request})
@@ -158,83 +194,97 @@ def guide(request: Request):
 @app.get("/spot")
 def spot(request: Request):
     return templates.TemplateResponse("spot/home.html", {"request": request})
+
 @app.get("/spot/signup")
-def spot(request: Request):
+def spot_signup(request: Request):
     return templates.TemplateResponse("spot/Signup.html", {"request": request})
+
 @app.get("/spot/login")
-def spot(request: Request):
+def spot_login(request: Request):
     return templates.TemplateResponse("spot/Login.html", {"request": request})
+
 @app.get("/spot/AIQ.")
-def spot(request: Request):
+def spot_aiq(request: Request):
     return templates.TemplateResponse("spot/AIQ..html", {"request": request})
+
 @app.get("/spot/about")
-def spot(request: Request):
+def spot_about(request: Request):
     return templates.TemplateResponse("spot/aboutSpot+.html", {"request": request})
-#------------------------------------------------------------------------------------
 
 @app.post("/post_register")
 def process_register(username: str = Form(...), password: str = Form(...)):
-    existing_user = Usersession.query(User).filter_by(name=username).first()
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_table WHERE name = %s", (username,))
+
+    existing_user = cursor.fetchone()
     if existing_user:
+        cursor.close()
+        conn.close()
         return FileResponse('public/register.html')
-    new_user = User(name=username, password=password)
-    Usersession.add(new_user)
-    Usersession.commit()
-    
-    response = FileResponse("public/index.html")  # 회원가입 성공 시 /index로 이동
-    
-    # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
+
+    cursor.execute("INSERT INTO users_table (name, password) VALUES (%s, %s)", (username, password))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    response = FileResponse("public/index.html")
     encrypted_username = serializer.dumps(username)
-    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
-    
+    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)
     return response
 
 @app.post("/post_login")
 def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
-    user = Usersession.query(User).filter_by(name=username, password=password).first()
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_table WHERE name = %s AND password = %s", (username, password))
+    user = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not user:
-        return FileResponse('public/login.html')  # 로그인 실패 시 로그인 페이지로 리다이렉트
-    
-    response = FileResponse('public/index.html')  # 로그인 성공 시 /index.html 파일을 반환
-    
-    # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
-    encrypted_username = serializer.dumps(username)
-    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
+        return FileResponse('public/login.html')
 
+    response = FileResponse('public/index.html')
+    encrypted_username = serializer.dumps(username)
+    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)
     return response
 
 @app.post("/spot/post_register")
-def process_register(username: str = Form(...), password: str = Form(...)):
-    existing_user = Usersession.query(User).filter_by(name=username).first()
+def spot_process_register(username: str = Form(...), password: str = Form(...)):
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_table WHERE name = %s", (username,))
+    existing_user = cursor.fetchone()
     if existing_user:
+        cursor.close()
+        conn.close()
         return FileResponse('public/spot/Login.html')
-    new_user = User(name=username, password=password)
-    Usersession.add(new_user)
-    Usersession.commit()
-    
-    response = FileResponse("public/spot/home.html")  # 회원가입 성공 시 /index로 이동
-    
-    # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
+
+    cursor.execute("INSERT INTO users_table (name, password) VALUES (%s, %s)", (username, password))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    response = FileResponse("public/spot/home.html")
     encrypted_username = serializer.dumps(username)
-    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
-    
+    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)
     return response
 
 @app.post("/spot/post_login")
-def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
-    user = Usersession.query(User).filter_by(name=username, password=password).first()
+def spot_process_login(request: Request, username: str = Form(...), password: str = Form(...)):
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_table WHERE name = %s AND password = %s", (username, password))
+    user = cursor.fetchone()
+    cursor.close()
+    conn.close()
     if not user:
-        return FileResponse('public/spot/Login.html')  # 로그인 실패 시 로그인 페이지로 리다이렉트
-    
-    response = FileResponse('public/spot/home.html')  # 로그인 성공 시 /index.html 파일을 반환
-    
-    # 유저 정보를 쿠키에 저장 (예시로 만료 날짜는 30일 후로 설정)
+        return FileResponse('public/spot/Login.html')
+
+    response = FileResponse('public/spot/home.html')
     encrypted_username = serializer.dumps(username)
-    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)  # 30일의 초로 설정
-
+    response.set_cookie(key="username", value=encrypted_username, max_age=30*24*60*60)
     return response
-
-
 
 @app.post("/submit_contact_form")
 async def submit_contact_form(request: Request):
@@ -242,59 +292,64 @@ async def submit_contact_form(request: Request):
     name = form_data.get("name")
     title = form_data.get("title")
     message = form_data.get("message")
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO inquiry (username, title, content) VALUES (%s, %s, %s)", (name, title, message))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-    # 데이터베이스에 저장
-    db = Usersengineconn().sessionmaker()
-    new_inquiry = Inquiry(username=name, title=title, content=message)
-    db.add(new_inquiry)
-    db.commit()
-    db.close()
+    return templates.TemplateResponse('inquiry.html', context={"request": request})
 
-    return templates.TemplateResponse('inquiry.html', context={"request":request})
-
-
-# 게시글 작성 처리
 @app.post("/create_post")
-async def create_post(request: Request, title: str = Form(...),content: str = Form(...), username: str = Cookie(None)):
-    username=serializer.loads(username)
-    new_post = Board(title=title, author=username, content=content)
-    Usersession.add(new_post)
-    Usersession.commit()
+async def create_post(request: Request, title: str = Form(...), content: str = Form(...), username: str = Cookie(None)):
+    username = serializer.loads(username)
+    created_at = datetime.now()  # 현재 시간을 가져옴
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO board (title, author, content, created_at) VALUES (%s, %s, %s, %s)", (title, username, content, created_at))
+    conn.commit()
+    cursor.close()
+    conn.close()
     return RedirectResponse(url="/community", status_code=303)
 
-
 @app.post("/modify_post/{post_id}")
-async def modify_post(post_id: int, request: Request, title: str = Form(...), content: str = Form(...), username: str = Cookie(None), db: Usersession = Depends(Usersengineconn().sessionmaker)):
+async def modify_post(post_id: int, request: Request, title: str = Form(...), content: str = Form(...), username: str = Cookie(None)):
     username = serializer.loads(username)
-    post = db.query(Board).filter(Board.id == post_id).first()
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM board WHERE id = %s", (post_id,))
+    post = cursor.fetchone()
     if not post:
+        cursor.close()
+        conn.close()
         raise HTTPException(status_code=404, detail="Post not found")
 
-    if post.author != username:
-        raise HTTPException(status_code=403, detail="You are not authorized to modify this post")
-
-    # Update the post with the new title and content
-    post.title = title
-    post.content = content
-    db.commit()  # Save the changes to the database
-
+    cursor.execute("UPDATE board SET title = %s, content = %s WHERE id = %s", (title, content, post_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
     return RedirectResponse(url=f"/view_board/{post_id}", status_code=303)
 
-
-#-------------------------------------------------------------------------------
-
-
 @app.delete("/delete_post/{post_id}")
-async def delete_post(post_id: int, request: Request, username: str = Cookie(None), db: Usersession = Depends(Usersengineconn().sessionmaker)):
+async def delete_post(post_id: int, request: Request, username: str = Cookie(None)):
     username = serializer.loads(username)
-    post = db.query(Board).filter(Board.id == post_id).first()
+    conn = get_db_connection(USER_DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM board WHERE id = %s", (post_id,))
+    post = cursor.fetchone()
     if not post:
+        cursor.close()
+        conn.close()
         raise HTTPException(status_code=404, detail="Post not found")
-    if(post.author != username and is_manager(username, manager)==False):
+
+    if post[2] != username and not is_manager(username, manager):  # assuming author is the third field in the table
+        cursor.close()
+        conn.close()
         raise HTTPException(status_code=403, detail="You are not authorized to delete this post")
 
-    # Delete the post from the database
-    db.delete(post)
-    db.commit()
-
+    cursor.execute("DELETE FROM board WHERE id = %s", (post_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
     return RedirectResponse(url="/community", status_code=303)

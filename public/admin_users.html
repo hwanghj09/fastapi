@@ -56,8 +56,8 @@
         <tbody>
             {% for User in Users %}
             <tr>
-                <td>{{ User.id }}</td>
-                <td>{{ User.name }}</td>
+                <td>{{ User[0] }}</td>
+                <td>{{ User[1] }}</td>
                 <td><button onclick="confirmResetPassword({{ User.id }})">초기화</button></td>
             </tr>
             {% endfor %}

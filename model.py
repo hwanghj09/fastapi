@@ -1,6 +1,4 @@
-# model.py
-
-from sqlalchemy import Column, Integer, String, DateTime, Text,Float
+from sqlalchemy import Column, Integer, String, DateTime, Text, Float
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
@@ -9,12 +7,13 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users_table"
 
-    id = Column(Integer, nullable=False, autoincrement=True, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
 
 class Inquiry(Base):
     __tablename__ = "inquiry"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(255), nullable=False)
     title = Column(String(255), nullable=False)

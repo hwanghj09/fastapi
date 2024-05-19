@@ -58,15 +58,15 @@
 
 <body>
     <div class="container">
-        <h1>{{ post.title }}</h1>
+        <h1>{{ post[1] }}</h1>
         <div class="post-details">
-            <p><strong>Author:</strong> {{ post.author }}</p>
-            <p><strong>Created At:</strong> {{ post.created_at }}</p>
+            <p><strong>Author:</strong> {{ post[4] }}</p>
+            <p><strong>Created At:</strong> {{ post[3] }}</p>
         </div>
         <div class="post-content">
-            {{ post.content }}
+            {{ post[2] }}
         </div>
-        {% if username == post.author or manager_check == True%}
+        {% if username == post[4] or manager_check == True%}
         <center><button onclick="modifyPost()" class="modification-button">수정하기</button></center>
         {% endif %}
 
@@ -78,7 +78,7 @@
         }
 
         function modifyPost() {
-            window.location.href = "/modify_post/{{ post.id }}";
+            window.location.href = "/modify_post/{{ post[0] }}";
         }
     </script>
 </body>

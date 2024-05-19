@@ -57,10 +57,10 @@
         <tbody>
             {% for inquiry in inquiries %}
             <tr>
-                <td>{{ inquiry.id }}</td>
-                <td>{{ inquiry.username }}</td>
-                <td>{{ inquiry.title }}</td>
-                <td>{{ inquiry.content }}</td>
+                <td>{{ inquiry[0] }}</td>
+                <td>{{ inquiry[2] }}</td>
+                <td>{{ inquiry[1] }}</td>
+                <td>{{ inquiry[3] }}</td>
             </tr>
             {% endfor %}
         </tbody>
