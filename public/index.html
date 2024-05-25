@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible"="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>index</title>
     <style>
@@ -92,7 +92,6 @@
             margin: 0 auto;
             position: relative;
             text-align: center;
-            /* 텍스트를 가운데 정렬 */
             opacity: 1;
             margin-top: 250px;
         }
@@ -128,7 +127,6 @@
         #toggleSidebar:hover {
             color: black;
         }
-        /* 추가된 애니메이션 스타일 */
         
         @keyframes moveUp {
             0% {
@@ -139,47 +137,97 @@
             }
         }
         
-        .내소개 {
-            width: 100%;
-            height: 200px;
-            position: absolute;
-            left: 0;
-            color: rgb(0, 0, 0);
-            overflow-x: 0;
-        }
-        
-        .내소개 p {
-            padding-left: 50px;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        
         .시작버튼 {
             text-align: center;
             margin-top: 20px;
             font-size: 16px;
             opacity: 0;
             transition: opacity 2s ease-in-out;
-            /* 애니메이션 설정 */
         }
         
         .시작버튼.fadeIn {
             opacity: 1;
-            /* fadeIn 클래스가 추가되면 투명도를 1로 설정하여 나타나게 함 */
         }
         
         @media screen and (max-width: 767px) {
             .나타나는메인 p {
                 font-size: 60px;
             }
-            .내소개 img {
-                padding-left: 10px;
-            }
-            .내소개 p {
-                padding-left: 10px;
-                font-weight: bold;
-                font-size: 12px;
-            }
+        }
+        
+        .subject-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 500px auto 0;
+            padding: 30px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+        }
+        
+        .subject {
+            display: flex;
+            font-size: 24px;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 10px;
+            width: 300px;
+            height: 100px;
+            margin: 10px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-width 0.01s;
+        }
+        
+        .subject:hover {
+            border-width: 4px;
+        }
+        
+        .selected {
+            border-width: 4px;
+        }
+        
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 10001;
+        }
+        
+        .popup .close-btn {
+            display: block;
+            text-align: right;
+        }
+        
+        .popup .close-btn button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .popup .content {
+            margin-top: 10px;
+        }
+        
+        .popup .content div {
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #000;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -196,32 +244,33 @@
             <a href="/logout">로그아웃</a>
             <a href="/inquiry">문의</a>
         </nav>
-
     </header>
     <div class="나타나는메인">
         <p class="typing-text"></p>
     </div>
+
     <div class="sider" id="sider">
         <a href="/community">게시판</a>
-        <a href="https://hwanghj09.github.io/school/" target="_blank">과학 실험 사이트</a>
-        <a href="/3d">3d</a>
-        <a href="/paint_board">그림판</a>
-        <a href="/zizon-shopping">쇼핑</a>
+        <a href="/">문제 풀기</a>
+        <a href="/">출제하기</a>
         <a href="/spot">Spot</a>
+        <a href="/spot">about</a>
     </div>
-    <div class="시작버튼"><button onclick="scrollToDescription()">시작하기</button></div>
-    <div class="내소개" style="bottom: -300px;">
-        <hr width="80%">
-        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column; padding-top: 20px; padding-bottom: 20px;">
-            <img class="img" src="https://ichef.bbci.co.uk/news/976/cpsprodpb/16620/production/_91408619_55df76d5-2245-41c1-8031-07a4da3f313f.jpg" style="width: 250px; height: 250px;">
-            <div style="padding-left: 20px; text-align: center;">
-                <p>안녕하세요, 황현준입니다.</p>
-                <p>저는 개발에 열정을 가지고 있으며, 문제 해결능력과 협업 능력을 갖추고 있습니다.</p>
-                <p>새로운 기술에 끊임없이 도전하며 사용자 중심의 솔루션을 제공하기 위해 노력하고 있습니다.</p>
-            </div>
-        </div>
-        <hr width="80%">
+
+    <div class="시작버튼">
+        <button onclick="scrollToDescription()">시작하기</button>
     </div>
+    <div class="subject-container">
+        <div class="subject" onclick="showPopup('math')">수학</div>
+        <div class="subject" onclick="showPopup('english')">영어</div>
+        <div class="subject" onclick="showPopup('korean')">국어</div>
+        <div class="subject" onclick="showPopup('history')">역사</div>
+        <div class="subject" onclick="showPopup('society')">사회</div>
+        <div class="subject" onclick="showPopup('science')">과학</div>
+    </div>
+
+    <div id="popupContainer"></div>
+
     <script>
         const toggleButton = document.getElementById('toggleSidebar');
         const sider = document.getElementById('sider');
@@ -238,7 +287,7 @@
         });
 
         const typingText = document.querySelector('.typing-text');
-        const text1 = "I'm Student";
+        const text1 = "I 'm Student";
         const text2 = " Programmer";
         let index = 0;
 
@@ -248,7 +297,7 @@
                 index++;
                 setTimeout(type, 50);
             } else {
-                setTimeout(deleteText, 1000); // "I'm Student"가 모두 타이핑된 후 1초 후에 삭제
+                setTimeout(deleteText, 1000); // "I'm Student "가 모두 타이핑된 후 1초 후에 삭제
             }
         }
 
@@ -259,7 +308,7 @@
                 setTimeout(deleteText, 50);
             } else {
                 setTimeout(type2, 500);
-                index = 0
+                index = 0;
             }
         }
 
@@ -275,7 +324,7 @@
         }
 
         function scrollToDescription() {
-            const descriptionSection = document.querySelector('.내소개');
+            const descriptionSection = document.querySelector('.subject-container');
             descriptionSection.scrollIntoView({
                 behavior: 'smooth'
             }); // 부드러운 스크롤 이동
@@ -302,8 +351,92 @@
                     console.error('Error checking cookie:', error);
                 });
         });
-    </script>
 
+        function showPopup(subject) {
+            const popupContainer = document.getElementById('popupContainer');
+            const subjects = {
+                math: [{
+                    title: '암산 게임',
+                    url: '/study/math/암산게임'
+                }, {
+                    title: '이차방정식',
+                    url: '/study/math/이차방정식'
+                }, {
+                    title: 'a',
+                    url: '/study/math/a'
+                }],
+                english: [{
+                    title: 'Reading',
+                    url: '/study/english/reading'
+                }, {
+                    title: 'Writing',
+                    url: '/study/english/writing'
+                }, {
+                    title: 'Listening',
+                    url: '/study/english/listening'
+                }],
+                korean: [{
+                    title: '문법',
+                    url: '/study/korean/grammar'
+                }, {
+                    title: '작문',
+                    url: '/study/korean/writing'
+                }, {
+                    title: '독해',
+                    url: '/study/korean/reading'
+                }],
+                history: [{
+                    title: '고대사',
+                    url: '/study/history/ancient'
+                }, {
+                    title: '중세사',
+                    url: '/study/history/medieval'
+                }, {
+                    title: '근현대사',
+                    url: '/study/history/modern'
+                }],
+                society: [{
+                    title: '경제',
+                    url: '/study/society/economy'
+                }, {
+                    title: '정치',
+                    url: '/study/society/politics'
+                }, {
+                    title: '사회문화',
+                    url: '/study/society/culture'
+                }],
+                science: [{
+                    title: '물리',
+                    url: '/study/science/physics'
+                }, {
+                    title: '화학',
+                    url: '/study/science/chemistry'
+                }, {
+                    title: '생물',
+                    url: '/study/science/biology'
+                }]
+            };
+
+            const content = subjects[subject].map(item => `<div onclick="goto('${item.url}')">${item.title}</div>`).join('');
+            const subjectName = subject.charAt(0).toUpperCase() + subject.slice(1);
+            popupContainer.innerHTML = `
+                <div class="popup">
+                    <center><h1>${subjectName}</h1></center>
+                    <div class="close-btn"><button onclick="closePopup()">×</button></div>
+                    <div class="content">${content}</div>
+                </div>
+            `;
+        }
+
+        function closePopup() {
+            const popupContainer = document.getElementById('popupContainer');
+            popupContainer.innerHTML = '';
+        }
+
+        function goto(url) {
+            window.location.href = url;
+        }
+    </script>
 </body>
 
 </html>

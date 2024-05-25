@@ -8,7 +8,10 @@ import psycopg2
 from psycopg2 import sql
 import os
 from datetime import datetime
-
+import random
+import math
+from fractions import Fraction
+import openai
 app = FastAPI()
 templates = Jinja2Templates(directory='./public')
 
@@ -46,6 +49,10 @@ def register(request: Request):
 def login(request: Request):
     return templates.TemplateResponse('login.html', context={'request': request})
 
+@app.get("/study/{subject}/{unit}")
+def study(request: Request, subject: str, unit: str):
+    return templates.TemplateResponse(subject+'.html', context={'request': request, 'unit':unit})
+
 @app.get("/community")
 async def community(request: Request):
     conn = get_db_connection(USER_DB_CONFIG)
@@ -72,10 +79,6 @@ def admin(request: Request, username: str = Cookie(None)):
     if not is_manager(username, manager):
         raise HTTPException(status_code=302, detail="Unauthorized", headers={"Location": "/index"})
     return templates.TemplateResponse('admin.html', context={'request': request})
-
-@app.get("/3d")
-def model(request: Request):
-    return templates.TemplateResponse('3d.html', context={'request': request})
 
 @app.get("/admin/inquiries")
 async def get_inquiries(request: Request, username: str = Cookie(None)):
@@ -157,39 +160,6 @@ async def modify_post(post_id: int, request: Request, username: str = Cookie(Non
         raise HTTPException(status_code=404, detail="Post not found")
     return templates.TemplateResponse("modify_post.html", {"request": request, "post": post})
 
-@app.get("/paint_board")
-def paintboard(request: Request):
-    return templates.TemplateResponse("paint_board.html", {"request": request})
-
-@app.get("/zizon-shopping")
-def zizon_shopping(request: Request):
-    return templates.TemplateResponse("쇼핑/index.html", {"request": request})
-
-@app.get("/shop")
-async def shop(request: Request):
-    conn = get_db_connection(USER_DB_CONFIG)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products")
-    products = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return templates.TemplateResponse("쇼핑/shop.html", {"request": request, "products": products})
-
-@app.get("/product/{product_id}")
-async def product_detail(product_id: int, request: Request):
-    conn = get_db_connection(USER_DB_CONFIG)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products WHERE id = %s", (product_id,))
-    product = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return templates.TemplateResponse("쇼핑/product.html", {"request": request, "product": product})
-
-@app.get("/guide")
-def guide(request: Request):
-    return templates.TemplateResponse("쇼핑/guide.html", {"request": request})
 
 @app.get("/spot")
 def spot(request: Request):
@@ -210,6 +180,63 @@ def spot_aiq(request: Request):
 @app.get("/spot/about")
 def spot_about(request: Request):
     return templates.TemplateResponse("spot/aboutSpot+.html", {"request": request})
+
+@app.post("/study/math/암산게임")
+def mathgame(request: Request):
+    num1 = random.randint(100, 999)
+    num2 = random.randint(100, 999)
+    operations = ['+', '-', '*', '/']
+    operation = random.choice(operations)
+    problem = f"{num1} {operation} {num2}"
+    if operation == '+':
+        answer = num1 + num2
+    elif operation == '-':
+        answer = num1 - num2
+    elif operation == '*':
+        answer = num1 * num2
+    else:
+        answer = num1 // num2
+
+    return {"problem": problem, "answer": answer}
+
+def generate_quadratic_equation():
+    while True:
+        a = random.choice([random.randint(-10, -1), random.randint(1, 10)])  # -10에서 -1 또는 1에서 10 사이의 랜덤한 값
+        b = random.choice([random.randint(-10, -1), random.randint(1, 10)])
+        c = random.choice([random.randint(-10, -1), random.randint(1, 10)])
+        
+        if a != 0:  # a가 0이 아닌 경우에만 종료
+            discriminant = b**2 - 4*a*c
+            if discriminant >= 0:  # 근이 정수인 경우에만 종료
+                root1 = (-b + math.sqrt(discriminant)) / (2*a)
+                root2 = (-b - math.sqrt(discriminant)) / (2*a)
+                if root1.is_integer() and root2.is_integer():  # 두 근이 모두 정수인지 확인
+                    return a, b, c
+
+def quadratic_roots(a, b, c):
+    discriminant = b**2 - 4*a*c
+    if discriminant > 0:
+        root1 = (-b + math.sqrt(discriminant)) / (2*a)
+        root2 = (-b - math.sqrt(discriminant)) / (2*a)
+        return root1, root2
+    elif discriminant == 0:
+        root = -b / (2*a)
+        return root,
+    else:
+        return "근은 실수입니다."
+
+@app.post("/study/math/이차방정식")
+async def mathgame(request: Request):
+    # 랜덤한 이차방정식 생성
+    a, b, c = generate_quadratic_equation()
+
+    # 생성된 이차방정식 출력
+    equation = f"{a}x² + {b}x + {c} = 0"
+
+    # 근 계산
+    roots = quadratic_roots(a, b, c)
+    
+    return {"problem": equation, "answer": roots}
 
 @app.post("/post_register")
 def process_register(username: str = Form(...), password: str = Form(...)):
@@ -330,6 +357,7 @@ async def modify_post(post_id: int, request: Request, title: str = Form(...), co
     cursor.close()
     conn.close()
     return RedirectResponse(url=f"/view_board/{post_id}", status_code=303)
+
 
 @app.delete("/delete_post/{post_id}")
 async def delete_post(post_id: int, request: Request, username: str = Cookie(None)):
