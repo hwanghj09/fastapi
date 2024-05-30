@@ -1,17 +1,14 @@
-from fastapi import FastAPI, HTTPException, Form, Request, Cookie, Response, Depends, WebSocket
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi import FastAPI, HTTPException, Form, Request, Cookie, Response
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from itsdangerous import URLSafeSerializer
-from pydantic import BaseModel
 from typing import List
 import psycopg2
-from psycopg2 import sql
-import os
 from datetime import datetime
 import random
 import math
-from fractions import Fraction
-import openai
+import sympy as sp
+
 app = FastAPI()
 templates = Jinja2Templates(directory='./public')
 
@@ -53,6 +50,9 @@ def login(request: Request):
 def study(request: Request, subject: str, unit: str):
     return templates.TemplateResponse(subject+'.html', context={'request': request, 'unit':unit})
 
+@app.get("/game")
+def login(request: Request):
+    return templates.TemplateResponse('game.html', context={'request': request})
 @app.get("/community")
 async def community(request: Request):
     conn = get_db_connection(USER_DB_CONFIG)
@@ -205,13 +205,12 @@ def generate_quadratic_equation():
         b = random.choice([random.randint(-10, -1), random.randint(1, 10)])
         c = random.choice([random.randint(-10, -1), random.randint(1, 10)])
         
-        if a != 0:  # a가 0이 아닌 경우에만 종료
-            discriminant = b**2 - 4*a*c
-            if discriminant >= 0:  # 근이 정수인 경우에만 종료
-                root1 = (-b + math.sqrt(discriminant)) / (2*a)
-                root2 = (-b - math.sqrt(discriminant)) / (2*a)
-                if root1.is_integer() and root2.is_integer():  # 두 근이 모두 정수인지 확인
-                    return a, b, c
+        discriminant = b**2 - 4*a*c
+        if discriminant >= 0:  # 근이 정수인 경우에만 종료
+            root1 = (-b + math.sqrt(discriminant)) / (2*a)
+            root2 = (-b - math.sqrt(discriminant)) / (2*a)
+            if root1.is_integer() and root2.is_integer():
+                return a, b, c
 
 def quadratic_roots(a, b, c):
     discriminant = b**2 - 4*a*c
@@ -230,13 +229,56 @@ async def mathgame(request: Request):
     # 랜덤한 이차방정식 생성
     a, b, c = generate_quadratic_equation()
 
-    # 생성된 이차방정식 출력
-    equation = f"{a}x² + {b}x + {c} = 0"
+    equation = f"{a}x² +{b}x +{c} = 0"
 
     # 근 계산
     roots = quadratic_roots(a, b, c)
     
     return {"problem": equation, "answer": roots}
+
+@app.post("/study/math/이차방정식활용")
+async def mathgame(request: Request):
+    problem_data = generate_quadratic_problem()
+    return {"problem": problem_data["problem"], "answer": problem_data["answer"]}
+def generate_quadratic_problem():
+    problems = [
+        generate_area_problem,
+        generate_consecutive_odd_problem,
+        generate_road_width_problem
+    ]
+    # 랜덤하게 문제 유형을 선택합니다.
+    problem_func = random.choice(problems)
+    return problem_func()
+
+def generate_area_problem():
+    # 랜덤한 가로 세로 선택 (정수로 선택)
+    a = random.randint(1, 10)
+    b = random.randint(1, 10)
+    c = a * b
+    
+    equation = f"x^2 - ({a + b})x + {c} = 0"
+    x = sp.symbols('x')
+    area_equation = x**2 - (a + b)*x + c
+    solutions = sp.solve(area_equation, x)
+    # 실수 해 중에서 정수로 된 해를 선택하고 허수 해는 제외합니다.
+    solutions = [int(sol.evalf()) for sol in solutions if sol.is_real and sol > 0 and sol.is_integer]
+    
+    problem = f"가로 길이가 {a} cm, 세로 길이가 {b} cm인 직사각형의 넓이는 {c} cm^2입니다. 직사각형의 한 변의 길이 x를 구하세요."
+    return {"problem": problem, "answer": solutions}
+
+def generate_consecutive_odd_problem():
+    random_number = random.randint(10, 100)
+    largest_square = int((random_number / 3) ** 0.5)
+    smallest_odd = largest_square - 2 if largest_square % 2 == 0 else largest_square - 1
+    return {"problem": f"연속하는 세 홀수가 있다. 가장 큰 수의 제곱이 다른 두 수의 합보다 {random_number}보다 작을 때 가장 작은 홀수는?", "answer": smallest_odd}
+
+def generate_road_width_problem():
+    width = random.randint(1, 20)
+    height = random.randint(1, 20)
+    grass_area = random.randint(30, 100)
+    max_road_width = grass_area // height
+    road_width = random.randint(1, max_road_width)
+    return {"problem": f"가로와 세로의 길이가 각각 {width}m, {height}m인 잔디밭에 폭이 일정한 길을 내려고 합니다. 길을 제외한 잔디밭의 넓이가 {grass_area}m²입니다. 길의 폭은 얼마입니까?", "answer": road_width}
 
 @app.post("/post_register")
 def process_register(username: str = Form(...), password: str = Form(...)):

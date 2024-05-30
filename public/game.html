@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Platformer</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        canvas {
+            background: #4d4d4d;
+            display: block;
+        }
+        
+        #chal-compl {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 2s ease-in-out;
+        }
+        
+        #chal-compl h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        #chal-compl h3 {
+            font-size: 1.5em;
+        }
+        
+        #menu,
+        #challenge-menu,
+        #sub-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+            width: 50%;
+            height: 30%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+        }
+        
+        #menu h1,
+        #challenge-menu h1,
+        #sub-menu h1 {
+            margin: 0;
+            font-size: 3em;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        #menu button,
+        #challenge-menu button,
+        #sub-menu button {
+            padding: 20px;
+            font-size: 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #6200ea;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            animation: fadeIn 2s ease-in-out;
+        }
+        
+        #menu button:hover,
+        #challenge-menu button:hover,
+        #sub-menu button-hover {
+            background-color: #3700b3;
+        }
+        
+        #challenge-menu {
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="menu">
+        <br><br>
+        <h1>어두운 무언가</h1>
+        <br><br>
+        <button id="startButton">Start Game</button>
+        <button id="challenge">도전과제</button>
+    </div>
+
+    <div id="challenge-menu">
+        <h1>도전과제</h1>
+        <h3 id="chag-txt"></h3>
+        <button id="cha-exit">이전</button>
+    </div>
+
+    <script src="game.js"></script>
+
+    <div id="sub-menu">
+        <h1>메뉴</h1>
+        <button id="continue" onclick="continu()">계속하기</button>
+        <button id="exit" onclick="exit()">나가기</button>
+    </div>
+    <div id="chal-compl">
+        <h2>도전과제 클리어!</h2>
+        <h3 id="chal-compl-txt"></h3>
+    </div>
+</body>
+
+</html>

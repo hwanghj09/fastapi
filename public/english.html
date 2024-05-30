@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+        /* 선택된 버튼의 스타일 */
+        
+        .selected-button {
+            border-width: 3px;
+        }
+        
+        #quizContainer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="unitHeader">{{ unit }}</h1>
+
+    <div id="wordSets">
+        <button onclick="showWords('middle1')" id="btnMiddle1">중1 영어 단어 암기하기</button>
+        <button onclick="showWords('middle2')" id="btnMiddle2">중2 영어 단어 암기하기</button>
+        <button onclick="showWords('middle3')" id="btnMiddle3">중3 영어 단어 암기하기</button>
+    </div>
+
+    <div id="words" class="hidden">
+        <!-- 중1 영어 단어 -->
+        <div id="middle1" class="hidden">
+            <p><strong>1. abandon:</strong> to leave behind; to give up</p>
+            <p><strong>2. beneficial:</strong> helpful; advantageous</p>
+            <p><strong>3. conceal:</strong> to hide or keep secret, to place out of sight</p>
+            <p><strong>4. diminish:</strong> to make or become smaller, reduce in size</p>
+            <p><strong>5. eligible:</strong> qualified for or allowed or worthy of being chosen</p>
+        </div>
+
+        <!-- 중2 영어 단어 -->
+        <div id="middle2" class="hidden">
+            <p><strong>1. acknowledge:</strong> recognize; admit</p>
+            <p><strong>2. capability:</strong> ability or skill</p>
+            <p><strong>3. diligent:</strong> hard-working and careful</p>
+            <p><strong>4. essential:</strong> absolutely necessary; extremely important</p>
+            <p><strong>5. illuminate:</strong> to light up or make clear</p>
+            <!-- Add more words here -->
+        </div>
+
+        <!-- 중3 영어 단어 -->
+        <div id="middle3" class="hidden">
+            <p><strong>1. acknowledge:</strong> recognize; admit</p>
+            <p><strong>2. capability:</strong> ability or skill</p>
+            <p><strong>3. diligent:</strong> hard-working and careful</p>
+            <p><strong>4. essential:</strong> absolutely necessary; extremely important</p>
+            <p><strong>5. illuminate:</strong> to light up or make clear</p>
+            <!-- Add more words here -->
+        </div>
+    </div>
+    <div id="quizContainer" class="hidden">
+        <h2>암기 퀴즈</h2>
+        <div id="question"></div>
+        <input type="text" id="answerInput">
+        <button onclick="checkAnswer()">정답 확인</button>
+    </div>
+    <button onclick="memorize()">암기하기</button>
+    <script>
+        const unit = "{{ unit }}";
+        let txt = "";
+        let wordsShown = false; // 단어들이 보여지고 있는지 여부를 추적하는 변수
+        let clickedButtonId = ""; // 마지막으로 클릭된 버튼의 ID를 추적하는 변수
+        document.getElementById('wordSets').style.display = "none";
+        if (unit === "단어암기") {
+            document.getElementById('wordSets').style.display = "block";
+        }
+
+        function showWords(level) {
+            const wordsDiv = document.getElementById('words');
+            const selectedLevel = document.getElementById(level);
+            if (wordsShown && txt === level) {
+                // 이미 보여진 단어들이면 숨김 처리
+                wordsDiv.classList.add('hidden');
+                wordsShown = false;
+            } else {
+                // 새로운 단어들을 보여줌
+                wordsDiv.classList.remove('hidden');
+                txt = level;
+                // 모든 단어들 숨김 처리
+                const wordSets = wordsDiv.children;
+                for (let i = 0; i < wordSets.length; i++) {
+                    wordSets[i].classList.add('hidden');
+                }
+                // 선택된 단어들 보여줌
+                selectedLevel.classList.remove('hidden');
+                wordsShown = true;
+            }
+
+            // 선택된 버튼 스타일 변경
+            const buttons = document.querySelectorAll('#wordSets button');
+            buttons.forEach(button => {
+                button.classList.remove('selected-button');
+            });
+            const clickedButton = document.getElementById('btn' + level.charAt(0).toUpperCase() + level.slice(1));
+            clickedButton.classList.toggle('selected-button');
+
+            // 버튼을 두 번 클릭하면 해당 버튼의 border가 원래대로 돌아가도록 설정
+            if (clickedButtonId === clickedButton.id) {
+                clickedButton.classList.remove('selected-button');
+                wordsDiv.classList.add('hidden');
+                wordsShown = false;
+                txt = "";
+                clickedButtonId = "";
+            } else {
+                clickedButtonId = clickedButton.id;
+            }
+        }
+
+        function memorize() {
+            const quizContainer = document.getElementById('quizContainer');
+            const words = document.getElementById(txt).getElementsByTagName('p');
+            const randomIndex = Math.floor(Math.random() * words.length);
+            const randomWord = words[randomIndex].innerText.split(':')[0].trim();
+            const questionDiv = document.getElementById('question');
+            questionDiv.innerText = randomWord;
+            quizContainer.classList.remove('hidden');
+        }
+
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            const correctAnswer = document.getElementById(txt).getElementsByTagName('p')[0].innerText.split(':')[1].trim();
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                alert('정답입니다!');
+            } else {
+                alert('오답입니다. 정답은 ' + correctAnswer + ' 입니다.');
+            }
+        }
+    </script>
+</body>
+
+</html>

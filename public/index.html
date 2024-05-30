@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible"="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <style>
+        /* 기존 스타일 코드 */
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            z-index: 10000;
+        }
+        
+        button {
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        
+        button a {
+            text-decoration: none;
+            color: black;
+        }
+        
+        nav.로그인회원가입문의 {
+            font-size: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            gap: 20px;
+        }
+        
+        nav.로그인회원가입문의 a {
+            text-decoration: none;
+            color: gray;
+            position: relative;
+            transition: border-bottom 0s ease-in-out;
+            margin-right: 30px;
+        }
+        
+        nav.로그인회원가입문의 a:hover {
+            border-bottom: 2px solid #000000;
+            color: black;
+        }
+        
+        nav.로그아웃문의 {
+            font-size: 15px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            gap: 20px;
+        }
+        
+        nav.로그아웃문의 a {
+            text-decoration: none;
+            color: gray;
+            position: relative;
+            transition: border-bottom 0s ease-in-out;
+            margin-right: 30px;
+        }
+        
+        nav.로그아웃문의 a:hover {
+            border-bottom: 2px solid #000000;
+            color: black;
+        }
+        
+        .나타나는메인 {
+            font-size: 80px;
+            margin: 0 auto;
+            position: relative;
+            text-align: center;
+            opacity: 1;
+            margin-top: 250px;
+        }
+        
+        .sider {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            text-align: center;
+            background-color: rgb(36, 36, 36);
+            transition: left 0.3s ease-in-out;
+            overflow-y: auto;
+            padding-top: 100px;
+            z-index: 1;
+        }
+        
+        .sider a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            font-size: 18px;
+            border-bottom: 1px solid #555;
+            transition: background-color 0.3s;
+        }
+        
+        .sider a:hover {
+            background-color: #555;
+        }
+        
+        #toggleSidebar:hover {
+            color: black;
+        }
+        
+        @keyframes moveUp {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-50px);
+            }
+        }
+        
+        .시작버튼 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+        
+        .시작버튼.fadeIn {
+            opacity: 1;
+        }
+        
+        @media screen and (max-width: 767px) {
+            .나타나는메인 p {
+                font-size: 60px;
+            }
+        }
+        
+        .subject-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 500px auto 0;
+            padding: 30px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+        }
+        
+        .subject {
+            display: flex;
+            font-size: 24px;
+            padding: 20px;
+            border: 2px solid #000;
+            border-radius: 10px;
+            width: 300px;
+            height: 100px;
+            margin: 10px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-width 0.01s;
+        }
+        
+        .subject:hover {
+            border-width: 4px;
+        }
+        
+        .selected {
+            border-width: 4px;
+        }
+        
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 10001;
+        }
+        
+        .popup .close-btn {
+            display: block;
+            text-align: right;
+        }
+        
+        .popup .close-btn button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .popup .content {
+            margin-top: 10px;
+        }
+        
+        .popup .content div {
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #000;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a id="toggleSidebar" style="padding: 5px; font-size: 50px; color: gray;">≡</a>
+        <nav class="로그인회원가입문의">
+            <a href="/login">로그인</a>
+            <a href="/register">회원가입</a>
+            <a href="/inquiry">문의</a>
+        </nav>
+        <nav class="로그아웃문의">
+            <a href="/logout">로그아웃</a>
+            <a href="/inquiry">문의</a>
+        </nav>
+    </header>
+    <div class="나타나는메인">
+        <p class="typing-text"></p>
+    </div>
+
+    <div class="sider" id="sider">
+        <a href="/community">게시판</a>
+        <a href="/">문제 풀기</a>
+        <a href="/">출제하기</a>
+        <a href="/spot">Spot</a>
+        <a href="/spot">about</a>
+    </div>
+
+    <div class="시작버튼">
+        <button onclick="scrollToDescription()">시작하기</button>
+    </div>
+    <div class="subject-container">
+        <div class="subject" onclick="showPopup('math')">수학</div>
+        <div class="subject" onclick="showPopup('english')">영어</div>
+        <div class="subject" onclick="showPopup('korean')">국어</div>
+        <div class="subject" onclick="showPopup('history')">역사</div>
+        <div class="subject" onclick="showPopup('society')">사회</div>
+        <div class="subject" onclick="showPopup('science')">과학</div>
+    </div>
+
+    <div id="popupContainer"></div>
+
+    <script>
+        const toggleButton = document.getElementById('toggleSidebar');
+        const sider = document.getElementById('sider');
+
+        let isSidebarOpen = false;
+
+        toggleButton.addEventListener('click', () => {
+            if (isSidebarOpen) {
+                sider.style.left = '-300px';
+            } else {
+                sider.style.left = '0px';
+            }
+            isSidebarOpen = !isSidebarOpen;
+        });
+
+        const typingText = document.querySelector('.typing-text');
+        const text1 = "I 'm Student";
+        const text2 = " Programmer";
+        let index = 0;
+
+        function type() {
+            if (index < text1.length) {
+                typingText.textContent += text1.charAt(index);
+                index++;
+                setTimeout(type, 50);
+            } else {
+                setTimeout(deleteText, 1000); // "I'm Student "가 모두 타이핑된 후 1초 후에 삭제
+            }
+        }
+
+        function deleteText() {
+            if (index > 4) {
+                typingText.textContent = text1.substring(0, index - 1); // 한 글자씩 삭제
+                index--;
+                setTimeout(deleteText, 50);
+            } else {
+                setTimeout(type2, 500);
+                index = 0;
+            }
+        }
+
+        function type2() {
+            if (index < text2.length) {
+                typingText.textContent += text2.charAt(index);
+                index++;
+                setTimeout(type2, 50);
+            } else {
+                const startButton = document.querySelector('.시작버튼');
+                startButton.classList.add('fadeIn');
+            }
+        }
+
+        function scrollToDescription() {
+            const descriptionSection = document.querySelector('.subject-container');
+            descriptionSection.scrollIntoView({
+                behavior: 'smooth'
+            }); // 부드러운 스크롤 이동
+        }
+
+        // 페이지 로드 후 타이핑 시작
+        window.addEventListener('load', () => {
+            type();
+        });
+        window.addEventListener('load', () => {
+            fetch('/check_login')
+                .then(response => response.json())
+                .then(data => {
+                    const login = data[0].login; // 서버로부터 받은 데이터에서 login 값을 추출하여 변수에 할당
+                    if (login) {
+                        document.getElementsByClassName('로그인회원가입문의')[0].style.display = 'none';
+                        document.getElementsByClassName('로그아웃문의')[0].style.display = 'block';
+                    } else {
+                        document.getElementsByClassName('로그인회원가입문의')[0].style.display = 'block';
+                        document.getElementsByClassName('로그아웃문의')[0].style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking cookie:', error);
+                });
+        });
+
+        function showPopup(subject) {
+            const popupContainer = document.getElementById('popupContainer');
+            const subjects = {
+                math: [{
+                    title: '암산 게임',
+                    url: '/study/math/암산게임'
+                }, {
+                    title: '이차방정식',
+                    url: '/study/math/이차방정식'
+                }, {
+                    title: '이차방정식의 활용',
+                    url: '/study/math/이차방정식활용'
+                }],
+                english: [{
+                    title: '단어암기',
+                    url: '/study/english/단어암기'
+                }, {
+                    title: 'Writing',
+                    url: '/study/english/writing'
+                }, {
+                    title: 'Listening',
+                    url: '/study/english/listening'
+                }],
+                korean: [{
+                    title: '문법',
+                    url: '/study/korean/grammar'
+                }, {
+                    title: '작문',
+                    url: '/study/korean/writing'
+                }, {
+                    title: '독해',
+                    url: '/study/korean/reading'
+                }],
+                history: [{
+                    title: '고대사',
+                    url: '/study/history/ancient'
+                }, {
+                    title: '중세사',
+                    url: '/study/history/medieval'
+                }, {
+                    title: '근현대사',
+                    url: '/study/history/modern'
+                }],
+                society: [{
+                    title: '경제',
+                    url: '/study/society/economy'
+                }, {
+                    title: '정치',
+                    url: '/study/society/politics'
+                }, {
+                    title: '사회문화',
+                    url: '/study/society/culture'
+                }],
+                science: [{
+                    title: '물리',
+                    url: '/study/science/physics'
+                }, {
+                    title: '화학',
+                    url: '/study/science/chemistry'
+                }, {
+                    title: '생물',
+                    url: '/study/science/biology'
+                }]
+            };
+
+            const content = subjects[subject].map(item => `<div onclick="goto('${item.url}')">${item.title}</div>`).join('');
+            const subjectName = subject.charAt(0).toUpperCase() + subject.slice(1);
+            popupContainer.innerHTML = `
+                <div class="popup">
+                    <center><h1>${subjectName}</h1></center>
+                    <div class="close-btn"><button onclick="closePopup()">×</button></div>
+                    <div class="content">${content}</div>
+                </div>
+            `;
+        }
+
+        function closePopup() {
+            const popupContainer = document.getElementById('popupContainer');
+            popupContainer.innerHTML = '';
+        }
+
+        function goto(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+
+</html>
