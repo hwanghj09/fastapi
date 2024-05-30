@@ -12,3 +12,4 @@ itsdangerous==2.1.2
 passlib==1.7.4
 psycopg2==2.9.9
 openai==0.28.0
+sympy==1.12
